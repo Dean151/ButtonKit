@@ -50,7 +50,7 @@ ThrowableButton {
 By default, when the button closure throws, the button will Shake on error.
 For now, only the shake behavior is built-in:
 
-| `.shake` | <img src="/Preview/shake.gif">
+<figure><img src="/Preview/shake.gif" width="250"><figcaption>`.throwableButtonStyle(.shake)`</figcaption></figure>
 
 You can disable it by passing `.none` to throwableButtonStyle:
 
@@ -113,10 +113,10 @@ AsyncButton {
 While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressIndicator`.
 All sort of styles are built-in:
 
-| `.overlay` | <img src="/Preview/overlay.gif">
-| `.leading` | <img src="/Preview/leading.gif">
-| `.trailing` | <img src="/Preview/trailing.gif">
-| `.pulse` | <img src="/Preview/pulse.gif">
+<figure><img src="/Preview/overlay.gif" width="250"><figcaption>`.throwableButtonStyle(.overlay)`</figcaption></figure>
+<figure><img src="/Preview/pulse.gif" width="250"><figcaption>`.throwableButtonStyle(.pulse)`</figcaption></figure>
+<figure><img src="/Preview/leading.gif" width="250"><figcaption>`.throwableButtonStyle(.leading)`</figcaption></figure>
+<figure><img src="/Preview/trailing.gif" width="250"><figcaption>`.throwableButtonStyle(.trailing)`</figcaption></figure>
 
 You can disable this behavior by passing `.none` to `asyncButtonStyle`
 ```swift
