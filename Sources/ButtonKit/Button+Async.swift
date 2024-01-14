@@ -30,6 +30,10 @@ import SwiftUI
 public struct AsyncButton<S: View>: View {
     @Environment(\.asyncButtonStyle)
     private var asyncButtonStyle
+    @Environment(\.allowsHitTestingWhenLoading)
+    private var allowsHitTestingWhenLoading
+    @Environment(\.disabledWhenLoading)
+    private var disabledWhenLoading
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
 
@@ -77,7 +81,8 @@ public struct AsyncButton<S: View>: View {
         )
         return asyncButtonStyle
             .makeButton(configuration: asyncConfiguration)
-            .allowsHitTesting(task == nil)
+            .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
+            .disabled(disabledWhenLoading && task != nil)
     }
 
     public init(role: ButtonRole? = nil, action: @escaping () async throws -> Void, @ViewBuilder label: @escaping () -> S) {
@@ -120,6 +125,6 @@ extension AsyncButton where S == Text {
     }
     .buttonStyle(.borderedProminent)
     .buttonBorderShape(.roundedRectangle)
-    .asyncButtonStyle(.pulse)
+    .asyncButtonStyle(.overlay)
     .throwableButtonStyle(.shake)
 }

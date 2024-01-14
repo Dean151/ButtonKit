@@ -30,8 +30,13 @@ import SwiftUI
 public struct TrailingAsyncButtonStyle: AsyncButtonStyle {
     let disable: Bool
 
-    public init(disableOnLoading: Bool = true) {
+    @available(*, deprecated, message: "Initializing with disableOnLoading is deprecated and will be removed in 0.2.0; Use `.disabledWhenLoading` modifier instead")
+    public init(disableOnLoading: Bool) {
         self.disable = disableOnLoading
+    }
+
+    public init() {
+        disable = false
     }
 
     public func makeLabel(configuration: LabelConfiguration) -> some View {

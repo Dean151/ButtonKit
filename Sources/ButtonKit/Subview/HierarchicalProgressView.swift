@@ -27,7 +27,6 @@
 
 import SwiftUI
 
-// What I got
 public struct HierarchicalProgressView: View {
     public var body: some View {
         ProgressView()
@@ -45,5 +44,9 @@ public struct HierarchicalProgressView: View {
 
 #Preview {
     HierarchicalProgressView()
-        .foregroundStyle(.red)
+        .foregroundStyle(.linearGradient(
+            colors: [.blue, .red],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        )
 }

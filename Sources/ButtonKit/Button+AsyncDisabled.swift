@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+Pulse.swift
+//  Button+AsyncDisabled.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,41 +25,48 @@
 //  SOFTWARE.
 //
 
+import Foundation
+
 import SwiftUI
 
-public struct PulseAsyncButtonStyle: AsyncButtonStyle {
-    let disable: Bool
+// MARK: Public protocol
 
-    @available(*, deprecated, message: "Initializing with disableOnLoading is deprecated and will be removed in 0.2.0; Use `.disabledWhenLoading` modifier instead")
-    public init(disableOnLoading: Bool) {
-        self.disable = disableOnLoading
+extension View {
+    public func allowsHitTestingWhenLoading(_ enabled: Bool) -> some View {
+        environment(\.allowsHitTestingWhenLoading, enabled)
     }
 
-    public init() {
-        disable = false
-    }
-
-    public func makeButton(configuration: ButtonConfiguration) -> some View {
-        configuration.button
-            .compositingGroup()
-            .opacity(configuration.isLoading ? 0.5 : 1)
-            .animation(.linear(duration: 1).repeatForever(), value: configuration.isLoading)
-            .disabled(disable && configuration.isLoading)
+    public func disabledWhenLoading(_ disabled: Bool = true) -> some View {
+        environment(\.disabledWhenLoading, disabled)
     }
 }
 
-extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
-    public static var pulse: some AsyncButtonStyle {
-        PulseAsyncButtonStyle()
-    }
+// MARK: SwiftUI Environment
+
+struct AllowsHitTestingWhenLoadingKey: EnvironmentKey {
+    static let defaultValue: Bool = false
 }
 
-#Preview {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("Pulse")
+struct DisabledWhenLoadingKey: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    var allowsHitTestingWhenLoading: Bool {
+        get {
+            return self[AllowsHitTestingWhenLoadingKey.self]
+        }
+        set {
+            self[AllowsHitTestingWhenLoadingKey.self] = newValue
+        }
     }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.pulse)
+
+    var disabledWhenLoading: Bool {
+        get {
+            return self[DisabledWhenLoadingKey.self]
+        }
+        set {
+            self[DisabledWhenLoadingKey.self] = newValue
+        }
+    }
 }

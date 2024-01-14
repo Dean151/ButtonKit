@@ -47,8 +47,9 @@ ThrowableButton {
 }
 ```
 
-By default, when the button closure throws, the button will Shake on error.
-For now, only the shake behavior is built-in:
+When the button closure throws, the button will shake by default
+
+For now, only this shake behavior is built-in:
 
 <table>
     <tr>
@@ -59,7 +60,7 @@ For now, only the shake behavior is built-in:
     </tr>
 </table>
 
-You can disable it by passing `.none` to throwableButtonStyle:
+You can disable still it by passing `.none` to throwableButtonStyle:
 
 ```swift
 ThrowableButton {
@@ -107,7 +108,6 @@ ThrowableButton {
 ### Asynchronous
 
 Use it as any SwiftUI button, but the closure will support both try and await.
-When the process is in progress, the button hit test will be disabled, and the process will only triggers once.
 
 ```swift
 AsyncButton {
@@ -115,6 +115,23 @@ AsyncButton {
 } label {
     Text("Do something")
 }
+```
+
+When the process is in progress, another button press will not result in a new Task being issued. But the button is still enabled and hittable.
+You can disable the button on loading using `disabledWhenLoading` modifier.
+```swift
+AsyncButton {
+  ...
+}
+.disabledWhenLoading()
+```
+
+You can also disable hitTesting when loading with `allowsHitTestingWhenLoading` modifier.
+```swift
+AsyncButton {
+  ...
+}
+.allowsHitTestingWhenLoading(false)
 ```
 
 While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressIndicator`.
