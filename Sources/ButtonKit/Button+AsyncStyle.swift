@@ -54,19 +54,19 @@ extension AsyncButtonStyle {
 }
 
 public struct AsyncButtonStyleLabelConfiguration {
-    typealias Label = AnyView
+    public typealias Label = AnyView
 
-    let isLoading: Bool
-    let label: Label
-    let cancel: () -> Void
+    public let isLoading: Bool
+    public let label: Label
+    public let cancel: () -> Void
 }
 
 public struct AsyncButtonStyleButtonConfiguration {
-    typealias Button = AnyView
+    public typealias Button = AnyView
 
-    let isLoading: Bool
-    let button: Button
-    let cancel: () -> Void
+    public let isLoading: Bool
+    public let button: Button
+    public let cancel: () -> Void
 }
 
 // MARK: SwiftUI Environment

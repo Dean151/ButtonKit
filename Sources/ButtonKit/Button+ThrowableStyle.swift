@@ -54,16 +54,16 @@ extension ThrowableButtonStyle {
 }
 
 public struct ThrowableButtonStyleLabelConfiguration {
-    typealias Label = AnyView
+    public typealias Label = AnyView
 
-    let label: Label
-    let errorCount: Int
+    public let label: Label
+    public let errorCount: Int
 }
 public struct ThrowableButtonStyleButtonConfiguration {
-    typealias Button = AnyView
+    public typealias Button = AnyView
 
-    let button: Button
-    let errorCount: Int
+    public let button: Button
+    public let errorCount: Int
 }
 // MARK: SwiftUI Environment
 
