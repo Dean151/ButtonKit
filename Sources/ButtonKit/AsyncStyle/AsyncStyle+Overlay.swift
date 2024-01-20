@@ -28,16 +28,7 @@
 import SwiftUI
 
 public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
-    let disable: Bool
-
-    @available(*, deprecated, message: "Initializing with disableOnLoading is deprecated and will be removed in 0.2.0; Use `.disabledWhenLoading` modifier instead")
-    public init(disableOnLoading: Bool) {
-        self.disable = disableOnLoading
-    }
-
-    public init() {
-        disable = false
-    }
+    public init() {}
 
     public func makeLabel(configuration: LabelConfiguration) -> some View {
         configuration.label
@@ -48,10 +39,6 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
                 }
             }
             .animation(.default, value: configuration.isLoading)
-    }
-
-    public func makeButton(configuration: ButtonConfiguration) -> some View {
-        configuration.button.disabled(disable && configuration.isLoading)
     }
 }
 

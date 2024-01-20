@@ -28,23 +28,13 @@
 import SwiftUI
 
 public struct PulseAsyncButtonStyle: AsyncButtonStyle {
-    let disable: Bool
-
-    @available(*, deprecated, message: "Initializing with disableOnLoading is deprecated and will be removed in 0.2.0; Use `.disabledWhenLoading` modifier instead")
-    public init(disableOnLoading: Bool) {
-        self.disable = disableOnLoading
-    }
-
-    public init() {
-        disable = false
-    }
+    public init() {}
 
     public func makeButton(configuration: ButtonConfiguration) -> some View {
         configuration.button
             .compositingGroup()
             .opacity(configuration.isLoading ? 0.5 : 1)
             .animation(.linear(duration: 1).repeatForever(), value: configuration.isLoading)
-            .disabled(disable && configuration.isLoading)
     }
 }
 
