@@ -83,6 +83,7 @@ public struct AsyncButton<S: View>: View {
             .makeButton(configuration: asyncConfiguration)
             .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
             .disabled(disabledWhenLoading && task != nil)
+            .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
     }
 
     public init(role: ButtonRole? = nil, action: @escaping () async throws -> Void, @ViewBuilder label: @escaping () -> S) {

@@ -134,6 +134,33 @@ AsyncButton {
 .allowsHitTestingWhenLoading(false)
 ```
 
+Access and react to the underlying task using `asyncButtonTaskStarted` or `asyncButtonTaskEnded` modifier.
+```swift
+AsyncButton {
+  ...
+}
+.asyncButtonTaskStarted { task in
+    // Task started
+}
+.asyncButtonTaskEnded {
+    // Task ended or was cancelled
+}
+```
+
+You can summarize both using `asyncButtonTaskChanged` modifier.
+```swift
+AsyncButton {
+  ...
+}
+.asyncButtonTaskChanged { task in
+    if let task {
+        // Task started
+    } else {
+        // Task ended or was cancelled
+    }
+}
+```
+
 While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressIndicator`.
 All sort of styles are built-in:
 
