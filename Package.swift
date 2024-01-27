@@ -7,20 +7,12 @@ let package = Package(
     name: "ButtonKit",
     platforms: [.iOS(.v15), .tvOS(.v15), .watchOS(.v8), .macOS(.v12), .visionOS(.v1)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "ButtonKit",
-            targets: ["ButtonKit"]),
+        .library(name: "ButtonKit", targets: ["ButtonKit"]),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "ButtonKit",
-            swiftSettings: [
-                .strictConcurrency,
-                .warnLongExpressionTypeChecking
-            ]),
+            swiftSettings: [.strictConcurrency]),
         .testTarget(
             name: "ButtonKitTests",
             dependencies: ["ButtonKit"]),
@@ -29,11 +21,4 @@ let package = Package(
 
 extension SwiftSetting {
     static let strictConcurrency = enableUpcomingFeature("StrictConcurrency")
-    static let warnLongExpressionTypeChecking = unsafeFlags(
-        [
-            "-Xfrontend", "-warn-long-expression-type-checking=100",
-            "-Xfrontend", "-warn-long-function-bodies=100",
-        ],
-        .when(configuration: .debug)
-    )
 }
