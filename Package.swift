@@ -16,9 +16,24 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ButtonKit"),
+            name: "ButtonKit",
+            swiftSettings: [
+                .strictConcurrency,
+                .warnLongExpressionTypeChecking
+            ]),
         .testTarget(
             name: "ButtonKitTests",
             dependencies: ["ButtonKit"]),
     ]
 )
+
+extension SwiftSetting {
+    static let strictConcurrency = enableUpcomingFeature("StrictConcurrency")
+    static let warnLongExpressionTypeChecking = unsafeFlags(
+        [
+            "-Xfrontend", "-warn-long-expression-type-checking=100",
+            "-Xfrontend", "-warn-long-function-bodies=100",
+        ],
+        .when(configuration: .debug)
+    )
+}

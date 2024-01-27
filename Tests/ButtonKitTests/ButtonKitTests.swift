@@ -1,5 +1,5 @@
 import XCTest
-@testable import ButtonKit
+import ButtonKit
 
 final class ButtonKitTests: XCTestCase {
     func testExample() throws {
