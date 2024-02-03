@@ -10,12 +10,7 @@ let package = Package(
         .library(name: "ButtonKit", targets: ["ButtonKit"]),
     ],
     targets: [
-        .target(
-            name: "ButtonKit",
-            swiftSettings: [.strictConcurrency]),
-        .testTarget(
-            name: "ButtonKitTests",
-            dependencies: ["ButtonKit"]),
+        .target(name: "ButtonKit", swiftSettings: [.strictConcurrency]),
     ]
 )
 
