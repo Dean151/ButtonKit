@@ -20,5 +20,5 @@ let package = Package(
 )
 
 extension SwiftSetting {
-    static let strictConcurrency = enableUpcomingFeature("StrictConcurrency")
+    static let strictConcurrency = enableExperimentalFeature("StrictConcurrency")
 }
