@@ -25,7 +25,7 @@
 //  SOFTWARE.
 //
 
-import Combine
+@preconcurrency import Combine
 import SwiftUI
 
 public struct AsyncProgressButton<S: View>: View {
@@ -39,13 +39,12 @@ public struct AsyncProgressButton<S: View>: View {
     private var throwableButtonStyle
 
     private let role: ButtonRole?
-    private let action: (AsyncStream<Double>.Continuation) async throws -> Void
+    private let action: (CurrentValueSubject<Double, Never>) async throws -> Void
     private let label: S
+    private let progressStream: CurrentValueSubject<Double, Never> = .init(0)
 
     @State private var task: Task<Void, Never>?
     @State private var errorCount = 0
-    @State private var progress: Double = 0
-    @State private var progressStream: AsyncStream<Double>?
     @State private var progressTask: Task<Void, Never>?
 
     public var body: some View {
@@ -63,16 +62,15 @@ public struct AsyncProgressButton<S: View>: View {
             guard task == nil else {
                 return
             }
-            progressStream = AsyncStream { continuation in
-                task = Task {
-                    do {
-                        try await action(continuation)
-                    } catch {
-                        errorCount += 1
-                    }
-                    task = nil
+            task = Task {
+                do {
+                    try await action(progressStream)
+                } catch {
+                    errorCount += 1
                 }
+                task = nil
             }
+            
         } label: {
             label
         }
@@ -89,21 +87,11 @@ public struct AsyncProgressButton<S: View>: View {
             .makeButton(configuration: asyncConfiguration)
             .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
             .disabled(disabledWhenLoading && task != nil)
-            .preference(key: AsyncButtonProgressStreamPreferenceKey.self, value: $progress)
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
-            .onReceive(progressStream.publisher, perform: { stream in
-                progressTask?.cancel()
-                progressTask = Task {
-                    for await nextProgress in stream {
-                        print("nextProgress", nextProgress)
-                        progress = nextProgress
-                    }
-                    progress = 1
-                }
-            })
+            .environment(\.asyncButtonProgressSubject, progressStream)
     }
 
-    public init(role: ButtonRole? = nil, action: @escaping (AsyncStream<Double>.Continuation) async throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(role: ButtonRole? = nil, action: @escaping (CurrentValueSubject<Double, Never>) async throws -> Void, @ViewBuilder label: @escaping () -> S) {
         self.role = role
         self.action = action
         self.label = label()
@@ -218,11 +206,11 @@ extension AsyncButton where S == Text {
 
 #Preview("Progress") {
     AsyncProgressButton { continuation in
-        continuation.yield(0.3)
+        continuation.send(0.3)
         try? await Task.sleep(nanoseconds: 3_000_000_000)
-        continuation.yield(0.7)
+        continuation.send(0.7)
         try? await Task.sleep(nanoseconds: 3_000_000_000)
-        continuation.finish()
+        continuation.send(completion: .finished)
     } label: {
         Text("Process")
     }
