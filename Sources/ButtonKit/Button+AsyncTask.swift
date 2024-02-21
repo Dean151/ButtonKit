@@ -25,6 +25,7 @@
 //  SOFTWARE.
 //
 
+import Combine
 import SwiftUI
 
 // MARK: Public protocol
@@ -58,6 +59,14 @@ extension View {
 }
 
 // Internal implementation
+
+struct AsyncButtonProgressStreamPreferenceKey: PreferenceKey {
+    static var defaultValue: CurrentValueSubject<Double, Never>? = .init(0)
+
+    static func reduce(value: inout CurrentValueSubject<Double, Never>?, nextValue: () -> CurrentValueSubject<Double, Never>?) {
+        value = nextValue()
+    }
+}
 
 struct AsyncButtonTaskPreferenceKey: PreferenceKey {
     static var defaultValue: Task<Void, Never>?

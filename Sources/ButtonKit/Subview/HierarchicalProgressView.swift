@@ -25,30 +25,154 @@
 //  SOFTWARE.
 //
 
+import Combine
 import SwiftUI
 
 public struct HierarchicalProgressView: View {
     @Environment(\.asyncButtonProgressViewSize)
     private var controlSize
+    @Environment(\.asyncButtonProgressSubject)
+    private var progressSubject
+    @State private var progress: Double = 0
+    
+    private var lineWidth: CGFloat {
+        switch controlSize {
+        case .mini: 1
+        case .small: 2
+        case .regular: 4
+        case .large: 5
+        default: 2
+        }
+    }
+    
+    private var padding: CGFloat {
+        switch controlSize {
+        case .mini: 2
+        case .small: 2
+        case .regular: 2
+        case .large: 2
+        default: 2
+        }
+    }
+    
+    private var width: CGFloat {
+        switch controlSize {
+        case .mini: 8
+        case .small: 13
+        case .regular: 26
+        case .large: 25
+        default: 10
+        }
+    }
     
     public var body: some View {
-        ProgressView()
-            .controlSize(controlSize)
-            .opacity(0)
-            .overlay {
-                Rectangle()
-                    .fill(.primary)
-                    .mask {
-                        ProgressView().controlSize(controlSize)
-                    }
+        if let progressSubject = progressSubject {
+            ZStack {
+                Circle()
+                    .stroke(
+                        Color.primary.opacity(0.5),
+                        lineWidth: lineWidth
+                    )
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(
+                        Color.primary,
+                        lineWidth: lineWidth
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .animation(.interactiveSpring, value: progress)
             }
-            .compositingGroup()
+            .frame(width: width)
+            .padding(padding)
+            .onReceive(progressSubject, perform: { p in
+                progress = p
+            })
+        }
+        else {
+            ProgressView()
+                .controlSize(controlSize)
+                .opacity(0)
+                .overlay {
+                    Rectangle()
+                        .fill(.primary)
+                        .mask {
+                            ProgressView().controlSize(controlSize)
+                        }
+                }
+                .compositingGroup()
+        }
     }
 
     public init() {}
 }
 
-#Preview {
+private let determinantProgressPreviewSubject: CurrentValueSubject<Double, Never> = .init(0)
+private let determinantProgressPreviewTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+#Preview("Determinant Progress") {
+    HStack {
+        VStack {
+            HierarchicalProgressView()
+                .foregroundStyle(.linearGradient(
+                    colors: [.blue, .red],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing)
+                )
+                .asyncButtonProgressViewSize(.mini)
+                .environment(\.asyncButtonProgressSubject, determinantProgressPreviewSubject)
+//                .overlay {
+//                    ProgressView().controlSize(.mini)
+//                }
+            Text("mini")
+        }
+        VStack {
+            HierarchicalProgressView()
+                .foregroundStyle(.linearGradient(
+                    colors: [.blue, .red],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing)
+                )
+                .asyncButtonProgressViewSize(.small)
+                .environment(\.asyncButtonProgressSubject, determinantProgressPreviewSubject)
+//                .overlay {
+//                    ProgressView().controlSize(.small)
+//                }
+            Text("small")
+        }
+        VStack {
+            HierarchicalProgressView()
+                .foregroundStyle(.linearGradient(
+                    colors: [.blue, .red],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing)
+                )
+                .asyncButtonProgressViewSize(.regular)
+                .environment(\.asyncButtonProgressSubject, determinantProgressPreviewSubject)
+//                .overlay {
+//                    ProgressView().controlSize(.regular)
+//                }
+            Text("regular")
+        }
+        VStack {
+            HierarchicalProgressView()
+                .foregroundStyle(.linearGradient(
+                    colors: [.blue, .red],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing)
+                )
+                .asyncButtonProgressViewSize(.large)
+                .environment(\.asyncButtonProgressSubject, determinantProgressPreviewSubject)
+//                .overlay {
+//                    ProgressView().controlSize(.large)
+//                }
+            Text("large")
+        }
+        .onReceive(determinantProgressPreviewTimer, perform: { _ in
+            determinantProgressPreviewSubject.send(min(1, determinantProgressPreviewSubject.value + 0.1))
+        })
+    }.padding(40)
+}
+
+#Preview("Indeterminant Progress") {
     HierarchicalProgressView()
         .foregroundStyle(.linearGradient(
             colors: [.blue, .red],
