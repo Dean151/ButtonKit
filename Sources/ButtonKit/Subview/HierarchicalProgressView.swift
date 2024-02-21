@@ -28,13 +28,19 @@
 import SwiftUI
 
 public struct HierarchicalProgressView: View {
+    @Environment(\.asyncButtonProgressViewSize)
+    private var controlSize
+    
     public var body: some View {
         ProgressView()
+            .controlSize(controlSize)
             .opacity(0)
             .overlay {
                 Rectangle()
                     .fill(.primary)
-                    .mask { ProgressView() }
+                    .mask {
+                        ProgressView().controlSize(controlSize)
+                    }
             }
             .compositingGroup()
     }

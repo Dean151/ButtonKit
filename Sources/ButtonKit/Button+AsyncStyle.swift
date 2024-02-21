@@ -30,6 +30,9 @@ import SwiftUI
 // MARK: Public protocol
 
 extension View {
+    public func asyncButtonProgressViewSize(_ size: AsyncButtonProgressViewSize) -> some View {
+        environment(\.asyncButtonProgressViewSize, size)
+    }
     public func asyncButtonStyle<S: AsyncButtonStyle>(_ style: S) -> some View {
         environment(\.asyncButtonStyle, AnyAsyncButtonStyle(style))
     }
@@ -71,11 +74,26 @@ public struct AsyncButtonStyleButtonConfiguration {
 
 // MARK: SwiftUI Environment
 
+public typealias AsyncButtonProgressViewSize = ControlSize
+
+extension AsyncButtonProgressViewSize: EnvironmentKey {
+    public static let defaultValue: ControlSize = .regular
+}
+
 struct AsyncButtonStyleKey: EnvironmentKey {
     static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.overlay)
 }
 
 extension EnvironmentValues {
+    var asyncButtonProgressViewSize: AsyncButtonProgressViewSize {
+        get {
+            return self[AsyncButtonProgressViewSize.self]
+        }
+        set {
+            self[AsyncButtonProgressViewSize.self] = newValue
+        }
+    }
+    
     var asyncButtonStyle: AnyAsyncButtonStyle {
         get {
             return self[AsyncButtonStyleKey.self]

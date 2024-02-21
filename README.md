@@ -199,6 +199,15 @@ You can also build your own customization by implementing `AsyncButtonStyle` pro
 
 Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allow you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
 
+You can control the size of the `ProgressView` inside `AsyncButton` using the `asyncButtonProgressViewSize` modifier.
+```swift
+AsyncButton {
+  ...
+}
+.asyncButtonProgressViewSize(.small)
+```
+On macOS, you'll likely want to use the `.small` variant to match the standard system button.
+
 ## Contribute
 
 You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributing:

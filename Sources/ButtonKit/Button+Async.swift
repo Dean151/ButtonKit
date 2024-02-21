@@ -114,7 +114,10 @@ extension AsyncButton where S == Text {
         Text("Process")
     }
     .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.leading)
+    .asyncButtonProgressViewSize(.small)
     .buttonBorderShape(.roundedRectangle)
+    .frame(width: 400, height: 300)
 }
 
 #Preview("Error") {
