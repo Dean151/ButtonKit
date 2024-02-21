@@ -59,6 +59,14 @@ extension View {
 
 // Internal implementation
 
+struct AsyncButtonProgressStreamPreferenceKey: PreferenceKey {
+    static var defaultValue: Binding<Double> = .init(get: { 0 }, set: { _ in })
+
+    static func reduce(value: inout Binding<Double>, nextValue: () -> Binding<Double>) {
+        value = nextValue()
+    }
+}
+
 struct AsyncButtonTaskPreferenceKey: PreferenceKey {
     static var defaultValue: Task<Void, Never>?
 

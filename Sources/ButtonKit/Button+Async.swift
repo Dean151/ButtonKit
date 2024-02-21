@@ -25,7 +25,90 @@
 //  SOFTWARE.
 //
 
+import Combine
 import SwiftUI
+
+public struct AsyncProgressButton<S: View>: View {
+    @Environment(\.asyncButtonStyle)
+    private var asyncButtonStyle
+    @Environment(\.allowsHitTestingWhenLoading)
+    private var allowsHitTestingWhenLoading
+    @Environment(\.disabledWhenLoading)
+    private var disabledWhenLoading
+    @Environment(\.throwableButtonStyle)
+    private var throwableButtonStyle
+
+    private let role: ButtonRole?
+    private let action: (AsyncStream<Double>.Continuation) async throws -> Void
+    private let label: S
+
+    @State private var task: Task<Void, Never>?
+    @State private var errorCount = 0
+    @State private var progress: Double = 0
+    @State private var progressStream: AsyncStream<Double>?
+    @State private var progressTask: Task<Void, Never>?
+
+    public var body: some View {
+        let throwableLabelConfiguration = ThrowableButtonStyleLabelConfiguration(
+            label: AnyView(label),
+            errorCount: errorCount
+        )
+        let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
+            isLoading: task != nil,
+            label: AnyView(throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)),
+            cancel: { task?.cancel() }
+        )
+        let label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
+        let button = Button(role: role) {
+            guard task == nil else {
+                return
+            }
+            progressStream = AsyncStream { continuation in
+                task = Task {
+                    do {
+                        try await action(continuation)
+                    } catch {
+                        errorCount += 1
+                    }
+                    task = nil
+                }
+            }
+        } label: {
+            label
+        }
+        let throwableConfiguration = ThrowableButtonStyleButtonConfiguration(
+            button: AnyView(button),
+            errorCount: errorCount
+        )
+        let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
+            isLoading: task != nil,
+            button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
+            cancel: { task?.cancel() }
+        )
+        return asyncButtonStyle
+            .makeButton(configuration: asyncConfiguration)
+            .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
+            .disabled(disabledWhenLoading && task != nil)
+            .preference(key: AsyncButtonProgressStreamPreferenceKey.self, value: $progress)
+            .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
+            .onReceive(progressStream.publisher, perform: { stream in
+                progressTask?.cancel()
+                progressTask = Task {
+                    for await nextProgress in stream {
+                        print("nextProgress", nextProgress)
+                        progress = nextProgress
+                    }
+                    progress = 1
+                }
+            })
+    }
+
+    public init(role: ButtonRole? = nil, action: @escaping (AsyncStream<Double>.Continuation) async throws -> Void, @ViewBuilder label: @escaping () -> S) {
+        self.role = role
+        self.action = action
+        self.label = label()
+    }
+}
 
 public struct AsyncButton<S: View>: View {
     @Environment(\.asyncButtonStyle)
@@ -131,4 +214,21 @@ extension AsyncButton where S == Text {
     .buttonBorderShape(.roundedRectangle)
     .asyncButtonStyle(.overlay)
     .throwableButtonStyle(.shake)
+}
+
+#Preview("Progress") {
+    AsyncProgressButton { continuation in
+        continuation.yield(0.3)
+        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        continuation.yield(0.7)
+        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        continuation.finish()
+    } label: {
+        Text("Process")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.leading)
+    .asyncButtonProgressViewSize(.small)
+    .buttonBorderShape(.roundedRectangle)
+    .frame(width: 400, height: 300)
 }

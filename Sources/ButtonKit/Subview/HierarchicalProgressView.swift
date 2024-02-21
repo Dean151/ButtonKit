@@ -43,6 +43,9 @@ public struct HierarchicalProgressView: View {
                     }
             }
             .compositingGroup()
+            .onPreferenceChange(AsyncButtonProgressStreamPreferenceKey.self) { progress in
+                print("yeet", progress)
+            }
     }
 
     public init() {}
