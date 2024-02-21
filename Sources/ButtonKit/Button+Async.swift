@@ -205,16 +205,17 @@ extension AsyncButton where S == Text {
 }
 
 #Preview("Progress") {
-    AsyncProgressButton { continuation in
-        continuation.send(0.3)
+    AsyncProgressButton { progress in
+        progress.send(0.3)
         try? await Task.sleep(nanoseconds: 3_000_000_000)
-        continuation.send(0.7)
+        progress.send(0.7)
         try? await Task.sleep(nanoseconds: 3_000_000_000)
-        continuation.send(completion: .finished)
+        progress.send(completion: .finished)
     } label: {
         Text("Process")
     }
     .buttonStyle(.borderedProminent)
+    .asyncButtonProgressColor(.white)
     .asyncButtonStyle(.leading)
     .asyncButtonProgressViewSize(.small)
     .buttonBorderShape(.roundedRectangle)

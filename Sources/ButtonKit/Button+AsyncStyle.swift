@@ -31,6 +31,9 @@ import SwiftUI
 // MARK: Public protocol
 
 extension View {
+    public func asyncButtonProgressColor(_ color: AsyncButtonDeterminantProgressColor) -> some View {
+        environment(\.asyncButtonProgressColor, color)
+    }
     public func asyncButtonProgressViewSize(_ size: AsyncButtonProgressViewSize) -> some View {
         environment(\.asyncButtonProgressViewSize, size)
     }
@@ -75,6 +78,12 @@ public struct AsyncButtonStyleButtonConfiguration {
 
 // MARK: SwiftUI Environment
 
+public typealias AsyncButtonDeterminantProgressColor = Color
+
+extension AsyncButtonDeterminantProgressColor: EnvironmentKey {
+    public static let defaultValue: AsyncButtonDeterminantProgressColor = .accentColor
+}
+
 public typealias AsyncButtonProgressSubject = CurrentValueSubject<Double, Never>
 
 extension AsyncButtonProgressSubject: EnvironmentKey {
@@ -92,6 +101,15 @@ struct AsyncButtonStyleKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
+    var asyncButtonProgressColor: AsyncButtonDeterminantProgressColor {
+        get {
+            return self[AsyncButtonDeterminantProgressColor.self]
+        }
+        set {
+            self[AsyncButtonDeterminantProgressColor.self] = newValue
+        }
+    }
+    
     var asyncButtonProgressSubject: AsyncButtonProgressSubject? {
         get {
             return self[AsyncButtonProgressSubject.self]

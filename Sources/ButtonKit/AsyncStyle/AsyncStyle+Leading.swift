@@ -47,7 +47,26 @@ extension AsyncButtonStyle where Self == LeadingAsyncButtonStyle {
     }
 }
 
-#Preview {
+#Preview("Determinant") {
+    AsyncProgressButton { progress in
+        progress.send(0.2)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        progress.send(0.2)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        progress.send(0.2)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        progress.send(0.2)
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        progress.send(0.2)
+    } label: {
+        Text("Leading")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.leading)
+}
+
+
+#Preview("Indeterminant") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
     } label: {

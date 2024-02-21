@@ -208,6 +208,30 @@ AsyncButton {
 ```
 On macOS, you'll likely want to use the `.small` variant to match the standard system button.
 
+### Asynchronous Determinant Progress
+
+```swift
+AsyncProgressButton { progress in
+    progress.send(0.3)
+    try? await Task.sleep(nanoseconds: 3_000_000_000)
+    progress.send(0.7)
+    try? await Task.sleep(nanoseconds: 3_000_000_000)
+} label: {
+    Text("Process")
+}
+```
+
+`AsyncProgressButton` receives a parameter `CurrentValueSubject<Double>` that you can send values `0.0...1.0`. 
+
+You can control the color of the progress indicator using `.asyncButtonProgressColor`.
+
+```swift
+AsyncProgressButton { progress in
+    ...
+}
+.asyncButtonProgressColor(.white)
+```
+
 ## Contribute
 
 You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributing:

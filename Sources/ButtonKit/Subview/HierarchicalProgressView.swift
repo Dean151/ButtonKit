@@ -31,6 +31,8 @@ import SwiftUI
 public struct HierarchicalProgressView: View {
     @Environment(\.asyncButtonProgressViewSize)
     private var controlSize
+    @Environment(\.asyncButtonProgressColor)
+    private var progressColor
     @Environment(\.asyncButtonProgressSubject)
     private var progressSubject
     @State private var progress: Double = 0
@@ -39,9 +41,9 @@ public struct HierarchicalProgressView: View {
         switch controlSize {
         case .mini: 1
         case .small: 2
-        case .regular: 4
+        case .regular: 3
         case .large: 5
-        default: 2
+        default: 4
         }
     }
     
@@ -59,9 +61,9 @@ public struct HierarchicalProgressView: View {
         switch controlSize {
         case .mini: 8
         case .small: 13
-        case .regular: 26
+        case .regular: 20
         case .large: 25
-        default: 10
+        default: 20
         }
     }
     
@@ -70,13 +72,13 @@ public struct HierarchicalProgressView: View {
             ZStack {
                 Circle()
                     .stroke(
-                        Color.primary.opacity(0.5),
+                        progressColor.opacity(0.5),
                         lineWidth: lineWidth
                     )
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
-                        Color.primary,
+                        progressColor,
                         lineWidth: lineWidth
                     )
                     .rotationEffect(.degrees(-90))
@@ -87,6 +89,8 @@ public struct HierarchicalProgressView: View {
             .onReceive(progressSubject, perform: { p in
                 progress = p
             })
+//            .colorInvert()
+            .contrast(0.8)
         }
         else {
             ProgressView()
