@@ -170,16 +170,16 @@ All sort of styles are built-in:
         <td><img src="/Preview/pulse.gif" width="250"></td>
     </tr>
     <tr>
-        <td>.throwableButtonStyle(.shake)</td>
-        <td>.throwableButtonStyle(.pulse)</td>
+        <td>.asyncButtonStyle(.overlay)</td>
+        <td>.asyncButtonStyle(.pulse)</td>
     </tr>
     <tr>
         <td><img src="/Preview/leading.gif" width="250"></td>
         <td><img src="/Preview/trailing.gif" width="250"></td>
     </tr>
     <tr>
-        <td>.throwableButtonStyle(.leading)</td>
-        <td>.throwableButtonStyle(.trailing)</td>
+        <td>.asyncButtonStyle(.leading)</td>
+        <td>.asyncButtonStyle(.trailing)</td>
     </tr>
 </table>
 
