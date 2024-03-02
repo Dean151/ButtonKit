@@ -27,8 +27,8 @@
 
 import SwiftUI
 
-public struct HierarchicalProgressView: View {
-    public var body: some View {
+struct HierarchicalProgressView: View {
+    var body: some View {
         ProgressView()
             .opacity(0)
             .overlay {
@@ -36,10 +36,13 @@ public struct HierarchicalProgressView: View {
                     .fill(.primary)
                     .mask { ProgressView() }
             }
+            #if os(macOS)
+            .controlSize(.small)
+            #endif
             .compositingGroup()
     }
 
-    public init() {}
+    init() {}
 }
 
 #Preview {
