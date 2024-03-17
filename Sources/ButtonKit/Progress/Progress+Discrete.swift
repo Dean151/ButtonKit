@@ -25,15 +25,17 @@
 //  SOFTWARE.
 //
 
-public struct DiscreteProgress: ProgressKind {
+public struct DiscreteProgress: Progress {
     let totalUnitCount: Int
+
+    public let isDeterminant = true
 
     public func fractionCompleted(_ completedUnitCount: Int) -> Double {
         Double(completedUnitCount) / Double(totalUnitCount)
     }
 }
 
-extension ProgressKind where Self == DiscreteProgress {
+extension Progress where Self == DiscreteProgress {
     public static func discrete(totalUnitCount: Int) -> DiscreteProgress {
         assert(totalUnitCount > 0, "Discrete progression requires totalUnitCount to be positive")
         return DiscreteProgress(totalUnitCount: totalUnitCount)

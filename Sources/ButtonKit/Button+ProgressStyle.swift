@@ -57,7 +57,7 @@ public struct ProgressButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
     public let isLoading: Bool
-    public let progress: Progress
+    public let progress: TaskProgress
     public let label: Label
     public let cancel: () -> Void
 }
@@ -66,7 +66,7 @@ public struct ProgressButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
     public let isLoading: Bool
-    public let progress: Progress
+    public let progress: TaskProgress
     public let button: Button
     public let cancel: () -> Void
 }

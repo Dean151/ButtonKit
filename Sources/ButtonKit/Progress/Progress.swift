@@ -27,12 +27,14 @@
 
 import Foundation
 
-public protocol ProgressKind: Sendable {
+public protocol Progress: Sendable {
+    var isDeterminant: Bool { get }
     func fractionCompleted(_ completedUnitCount: Int) -> Double
 }
 
-public struct Progress: Sendable {
-    public let kind: ProgressKind
+public struct TaskProgress: Sendable {
+    public let progress: Progress
+
     public var completedUnitCount: Int = 0 {
         willSet {
             assert(completedUnitCount >= 0, "completedUnitCount must be positive")
@@ -40,7 +42,7 @@ public struct Progress: Sendable {
     }
 
     var fractionCompleted: Double {
-        kind.fractionCompleted(completedUnitCount)
+        progress.fractionCompleted(completedUnitCount)
     }
 
     mutating func reset() {
