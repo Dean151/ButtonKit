@@ -75,15 +75,12 @@ public struct AsyncButton<P: ProgressKind, S: View>: View {
                 return
             }
             task = Task {
-                progress.initialize()
                 do {
                     try await action($progress)
-                    if !Task.isCancelled {
-                        progress.finish()
-                    }
                 } catch {
                     errorCount += 1
                 }
+                progress.reset()
                 task = nil
             }
         } label: {

@@ -38,18 +38,12 @@ public struct Progress: Sendable {
             assert(completedUnitCount >= 0, "completedUnitCount must be positive")
         }
     }
-    var isFinished = false
 
     var fractionCompleted: Double {
         kind.fractionCompleted(completedUnitCount)
     }
 
-    mutating func initialize() {
+    mutating func reset() {
         completedUnitCount = 0
-        isFinished = false
-    }
-
-    mutating func finish() {
-        isFinished = true
     }
 }

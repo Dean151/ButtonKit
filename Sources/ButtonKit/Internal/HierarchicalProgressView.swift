@@ -48,6 +48,7 @@ struct HierarchicalProgressView: View {
     var progress: some View {
         if let progression {
             ProgressView(value: progression.value, total: progression.total)
+                .animation(progression.value == 0 ? nil : .default, value: progression.value)
         } else {
             ProgressView()
         }
