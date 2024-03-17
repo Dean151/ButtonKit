@@ -35,9 +35,7 @@ public struct BarProgressButtonStyle: ProgressButtonStyle {
             .opacity(configuration.isLoading ? 0 : 1)
             .overlay {
                 if configuration.isLoading {
-                    ProgressView(value: configuration.progress.fractionCompleted)
-                        .progressViewStyle(.linear)
-                    HierarchicalProgressView()
+                    HierarchicalProgressView(value: configuration.progress.fractionCompleted)
                 }
             }
             .animation(.default, value: configuration.isLoading)
@@ -51,9 +49,9 @@ extension ProgressButtonStyle where Self == BarProgressButtonStyle {
 }
 
 #Preview {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { $progress in
         for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 100_000_000)
+            try await Task.sleep(nanoseconds: 10_000_000)
             progress.completedUnitCount += 1
         }
     } label: {

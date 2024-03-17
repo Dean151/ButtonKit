@@ -26,7 +26,11 @@
 //
 
 public struct IndeterminateProgress: ProgressKind {
-    public let totalUnitCount: UInt = 0
+    public let isDeterminate = false
+
+    public func fractionCompleted(_ completedUnitCount: Int) -> Double {
+        fatalError("No fraction possible for indeterminate progress")
+    }
 }
 
 extension ProgressKind where Self == IndeterminateProgress {

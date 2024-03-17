@@ -27,31 +27,33 @@
 
 import Foundation
 
+public protocol ProgressKind: Sendable {
+    func fractionCompleted(_ completedUnitCount: Int) -> Double
+}
+
 public struct Progress: Sendable {
-    public let totalUnitCount: UInt
-    public var completedUnitCount: UInt = 0
+    public let kind: ProgressKind
+    public var completedUnitCount: Int = 0 {
+        willSet {
+            assert(completedUnitCount >= 0, "completedUnitCount must be positive")
+        }
+    }
     var isFinished = false
 
-    init(kind: ProgressKind) {
-        self.totalUnitCount = kind.totalUnitCount
-    }
-
-    mutating func complete() {
-        completedUnitCount = totalUnitCount
-        isFinished = true
-    }
-}
-
-public protocol ProgressKind {
-    var totalUnitCount: UInt { get }
-}
-
-public struct ProgressReport: Sendable {
-    let totalUnitCount: UInt
-    let completedUnitCount: UInt
-    let isFinished: Bool
-
     var fractionCompleted: Double {
-        totalUnitCount != 0 ? Double(completedUnitCount) / Double(totalUnitCount) : 0
+        kind.fractionCompleted(completedUnitCount)
+    }
+
+    mutating func initialize() {
+        completedUnitCount = 0
+        isFinished = false
+    }
+
+    mutating func abort() {
+        initialize()
+    }
+
+    mutating func finish() {
+        isFinished = true
     }
 }

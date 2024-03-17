@@ -28,13 +28,15 @@
 import SwiftUI
 
 struct HierarchicalProgressView: View {
+    let progression: (value: Double, total: Double)?
+
     var body: some View {
-        ProgressView()
+        progress
             .opacity(0)
             .overlay {
                 Rectangle()
                     .fill(.primary)
-                    .mask { ProgressView() }
+                    .mask { progress }
             }
             #if os(macOS)
             .controlSize(.small)
@@ -42,11 +44,35 @@ struct HierarchicalProgressView: View {
             .compositingGroup()
     }
 
-    init() {}
+    @ViewBuilder
+    var progress: some View {
+        if let progression {
+            ProgressView(value: progression.value, total: progression.total)
+        } else {
+            ProgressView()
+        }
+    }
+
+    init() {
+        self.progression = nil
+    }
+
+    public init<V: BinaryFloatingPoint>(value: V, total: V = 1.0) {
+        self.progression = (Double(value), Double(total))
+    }
 }
 
-#Preview {
+#Preview("Indeterminate") {
     HierarchicalProgressView()
+        .foregroundStyle(.linearGradient(
+            colors: [.blue, .red],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        )
+}
+
+#Preview("Determinate") {
+    HierarchicalProgressView(value: 0.42)
         .foregroundStyle(.linearGradient(
             colors: [.blue, .red],
             startPoint: .topLeading,

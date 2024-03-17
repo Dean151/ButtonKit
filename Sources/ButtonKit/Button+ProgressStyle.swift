@@ -57,7 +57,7 @@ public struct ProgressButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
     public let isLoading: Bool
-    public let progress: ProgressReport
+    public let progress: Progress
     public let label: Label
     public let cancel: () -> Void
 }
@@ -66,7 +66,7 @@ public struct ProgressButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
     public let isLoading: Bool
-    public let progress: ProgressReport
+    public let progress: Progress
     public let button: Button
     public let cancel: () -> Void
 }
@@ -74,7 +74,7 @@ public struct ProgressButtonStyleButtonConfiguration {
 // MARK: SwiftUI Environment
 
 struct ProgressButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyProgressButtonStyle = AnyProgressButtonStyle(.none)
+    static let defaultValue: AnyProgressButtonStyle = AnyProgressButtonStyle(.bar)
 }
 
 extension EnvironmentValues {
