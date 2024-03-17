@@ -49,10 +49,6 @@ public struct Progress: Sendable {
         isFinished = false
     }
 
-    mutating func abort() {
-        initialize()
-    }
-
     mutating func finish() {
         isFinished = true
     }

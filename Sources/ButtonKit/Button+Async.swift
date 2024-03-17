@@ -78,14 +78,11 @@ public struct AsyncButton<P: ProgressKind, S: View>: View {
                 progress.initialize()
                 do {
                     try await action($progress)
-                    if Task.isCancelled {
-                        progress.abort()
-                    } else {
+                    if !Task.isCancelled {
                         progress.finish()
                     }
                 } catch {
                     errorCount += 1
-                    progress.abort()
                 }
                 task = nil
             }
@@ -118,7 +115,6 @@ public struct AsyncButton<P: ProgressKind, S: View>: View {
 
     private func cancel() {
         task?.cancel()
-        progress.abort()
         task = nil
     }
 }
@@ -180,10 +176,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 }
 
 #Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { $progress in
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
         for _ in 1...100 {
             try await Task.sleep(nanoseconds: 20_000_000)
-            progress.completedUnitCount += 1
+            progress.wrappedValue.completedUnitCount += 1
         }
     } label: {
         Text("Process")
@@ -206,10 +202,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 }
 
 #Preview("Determinate error") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { $progress in
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
         for _ in 1...42 {
             try await Task.sleep(nanoseconds: 20_000_000)
-            progress.completedUnitCount += 1
+            progress.wrappedValue.completedUnitCount += 1
         }
         throw NSError() as Error
     } label: {
