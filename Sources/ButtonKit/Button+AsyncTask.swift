@@ -60,7 +60,7 @@ extension View {
 // Internal implementation
 
 struct AsyncButtonTaskPreferenceKey: PreferenceKey {
-    static var defaultValue: Task<Void, Never>?
+    static let defaultValue: Task<Void, Never>? = nil
 
     static func reduce(value: inout Task<Void, Never>?, nextValue: () -> Task<Void, Never>?) {
         value = nextValue()
