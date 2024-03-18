@@ -35,7 +35,7 @@ extension View {
     }
 }
 
-public protocol ProgressButtonStyle {
+public protocol ProgressButtonStyle: Sendable {
     associatedtype Label: View
     associatedtype Button: View
     typealias LabelConfiguration = ProgressButtonStyleLabelConfiguration
@@ -90,9 +90,9 @@ extension EnvironmentValues {
 
 // MARK: - Type erasure
 
-struct AnyProgressButtonStyle: ProgressButtonStyle {
-    private let _makeLabel: (ProgressButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: (ProgressButtonStyle.ButtonConfiguration) -> AnyView
+struct AnyProgressButtonStyle: ProgressButtonStyle, Sendable {
+    private let _makeLabel: @Sendable (ProgressButtonStyle.LabelConfiguration) -> AnyView
+    private let _makeButton: @Sendable (ProgressButtonStyle.ButtonConfiguration) -> AnyView
 
     init<S: ProgressButtonStyle>(_ style: S) {
         self._makeLabel = style.makeLabelTypeErased
@@ -109,9 +109,11 @@ struct AnyProgressButtonStyle: ProgressButtonStyle {
 }
 
 extension ProgressButtonStyle {
+    @Sendable
     func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
         AnyView(self.makeLabel(configuration: configuration))
     }
+    @Sendable
     func makeButtonTypeErased(configuration: ButtonConfiguration) -> AnyView {
         AnyView(self.makeButton(configuration: configuration))
     }

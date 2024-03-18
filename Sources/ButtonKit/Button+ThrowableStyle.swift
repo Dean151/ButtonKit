@@ -35,7 +35,7 @@ extension View {
     }
 }
 
-public protocol ThrowableButtonStyle {
+public protocol ThrowableButtonStyle: Sendable {
     associatedtype Label: View
     associatedtype Button: View
     typealias LabelConfiguration = ThrowableButtonStyleLabelConfiguration
@@ -85,8 +85,8 @@ extension EnvironmentValues {
 // MARK: - Type erasure
 
 struct AnyThrowableButtonStyle: ThrowableButtonStyle {
-    private let _makeLabel: (ThrowableButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
+    private let _makeLabel: @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
+    private let _makeButton: @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
 
     init<S: ThrowableButtonStyle>(_ style: S) {
         self._makeLabel = style.makeLabelTypeErased
@@ -103,9 +103,11 @@ struct AnyThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle {
+    @Sendable
     func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
         AnyView(self.makeLabel(configuration: configuration))
     }
+    @Sendable
     func makeButtonTypeErased(configuration: ButtonConfiguration) -> AnyView {
         AnyView(self.makeButton(configuration: configuration))
     }
