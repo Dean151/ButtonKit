@@ -102,7 +102,12 @@ public struct AsyncButton<P: Progress, S: View>: View {
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
     }
 
-    public init(role: ButtonRole? = nil, progress: P, action: @escaping (Binding<TaskProgress>) async throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (Binding<TaskProgress>) async throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
         self.role = role
         self.progress = progress
         self._taskProgress = .init(initialValue: TaskProgress(progress: progress))
@@ -117,7 +122,12 @@ public struct AsyncButton<P: Progress, S: View>: View {
 }
 
 extension AsyncButton where S == Text {
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, progress: P, action: @escaping (Binding<TaskProgress>) async throws -> Void) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (Binding<TaskProgress>) async throws -> Void
+    ) {
         self.role = role
         self.progress = progress
         self._taskProgress = .init(initialValue: TaskProgress(progress: progress))
@@ -125,7 +135,12 @@ extension AsyncButton where S == Text {
         self.label = Text(titleKey)
     }
 
-    public init(_ title: some StringProtocol, role: ButtonRole? = nil, progress: P, action: @escaping (Binding<TaskProgress>) async throws -> Void) {
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (Binding<TaskProgress>) async throws -> Void
+    ) {
         self.role = role
         self.progress = progress
         self._taskProgress = .init(initialValue: TaskProgress(progress: progress))
@@ -135,7 +150,11 @@ extension AsyncButton where S == Text {
 }
 
 extension AsyncButton where P == IndeterminateProgress {
-    public init(role: ButtonRole? = nil, action: @escaping () async throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
         self.role = role
         self.progress = IndeterminateProgress()
         self._taskProgress = .init(initialValue: TaskProgress(progress: .indeterminate))
@@ -145,7 +164,11 @@ extension AsyncButton where P == IndeterminateProgress {
 }
 
 extension AsyncButton where P == IndeterminateProgress, S == Text {
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () async throws -> Void) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
         self.role = role
         self.progress = IndeterminateProgress()
         self._taskProgress = .init(initialValue: TaskProgress(progress: .indeterminate))
@@ -153,7 +176,11 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         self.label = Text(titleKey)
     }
 
-    public init(_ title: some StringProtocol, role: ButtonRole? = nil, action: @escaping () async throws -> Void) {
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
         self.role = role
         self.progress = IndeterminateProgress()
         self._taskProgress = .init(initialValue: TaskProgress(progress: .indeterminate))
@@ -176,7 +203,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
     AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
         for _ in 1...100 {
             try await Task.sleep(nanoseconds: 20_000_000)
-            progress.wrappedValue.completedUnitCount += 1
+            progress.completedUnitCount += 1
         }
     } label: {
         Text("Process")
@@ -202,7 +229,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
     AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
         for _ in 1...42 {
             try await Task.sleep(nanoseconds: 20_000_000)
-            progress.wrappedValue.completedUnitCount += 1
+            progress.completedUnitCount += 1
         }
         throw NSError() as Error
     } label: {

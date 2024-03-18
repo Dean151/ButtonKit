@@ -53,7 +53,7 @@ extension ProgressButtonStyle where Self == PercentProgressButtonStyle {
     AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
         for _ in 1...100 {
             try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
+            progress.completedUnitCount += 1
         }
     } label: {
         Text("Progress bar")
