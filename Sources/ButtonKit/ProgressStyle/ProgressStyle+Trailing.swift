@@ -1,5 +1,5 @@
 //
-//  ProgressStyle+Bar.swift
+//  ProgressStyle+Trailing.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,24 +27,23 @@
 
 import SwiftUI
 
-public struct BarProgressButtonStyle: ProgressButtonStyle {
+public struct TrailingProgressButtonStyle: ProgressButtonStyle {
     public init() {}
 
     public func makeLabel(configuration: LabelConfiguration) -> some View {
-        configuration.label
-            .opacity(configuration.isLoading ? 0 : 1)
-            .overlay {
-                if configuration.isLoading {
-                    HierarchicalProgressView(value: configuration.progress.fractionCompleted)
-                }
+        HStack(spacing: 8) {
+            configuration.label
+            if configuration.isLoading {
+                CircularProgressView(value: configuration.progress.fractionCompleted)
             }
-            .animation(.default, value: configuration.isLoading)
+        }
+        .animation(.default, value: configuration.isLoading)
     }
 }
 
-extension ProgressButtonStyle where Self == BarProgressButtonStyle {
-    public static var bar: BarProgressButtonStyle {
-        BarProgressButtonStyle()
+extension ProgressButtonStyle where Self == TrailingProgressButtonStyle {
+    public static var trailing: TrailingProgressButtonStyle {
+        TrailingProgressButtonStyle()
     }
 }
 
@@ -55,8 +54,8 @@ extension ProgressButtonStyle where Self == BarProgressButtonStyle {
             progress.wrappedValue.completedUnitCount += 1
         }
     } label: {
-        Text("Progress bar")
+        Text("Trailing")
     }
     .buttonStyle(.borderedProminent)
-    .progressButtonStyle(.bar)
+    .progressButtonStyle(.trailing)
 }

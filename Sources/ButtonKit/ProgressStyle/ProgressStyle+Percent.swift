@@ -1,5 +1,5 @@
 //
-//  ProgressStyle+Bar.swift
+//  ProgressStyle+Percent.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,7 +27,7 @@
 
 import SwiftUI
 
-public struct BarProgressButtonStyle: ProgressButtonStyle {
+public struct PercentProgressButtonStyle: ProgressButtonStyle {
     public init() {}
 
     public func makeLabel(configuration: LabelConfiguration) -> some View {
@@ -35,16 +35,17 @@ public struct BarProgressButtonStyle: ProgressButtonStyle {
             .opacity(configuration.isLoading ? 0 : 1)
             .overlay {
                 if configuration.isLoading {
-                    HierarchicalProgressView(value: configuration.progress.fractionCompleted)
+                    Text(configuration.progress.fractionCompleted, format: .percent)
+                        .monospacedDigit()
                 }
             }
             .animation(.default, value: configuration.isLoading)
     }
 }
 
-extension ProgressButtonStyle where Self == BarProgressButtonStyle {
-    public static var bar: BarProgressButtonStyle {
-        BarProgressButtonStyle()
+extension ProgressButtonStyle where Self == PercentProgressButtonStyle {
+    public static var percent: PercentProgressButtonStyle {
+        PercentProgressButtonStyle()
     }
 }
 
@@ -58,5 +59,5 @@ extension ProgressButtonStyle where Self == BarProgressButtonStyle {
         Text("Progress bar")
     }
     .buttonStyle(.borderedProminent)
-    .progressButtonStyle(.bar)
+    .progressButtonStyle(.percent)
 }

@@ -1,5 +1,5 @@
 //
-//  HierarchicalProgressView.swift
+//  CircularProgressView.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,53 +27,44 @@
 
 import SwiftUI
 
-struct HierarchicalProgressView: View {
-    let progression: (value: Double, total: Double)?
+struct CircularProgressView: View {
+    let value: Double
+    let total: Double
 
     var body: some View {
-        progress
+        // Use ProgressView to set the view size
+        ProgressView()
+            #if os(macOS)
+            .controlSize(.small)
+            #endif
             .opacity(0)
             .overlay {
                 Rectangle()
                     .fill(.primary)
-                    .mask { progress }
+                    .mask {
+                        Group {
+                            Circle()
+                                .stroke(.black.opacity(0.33), lineWidth: 4)
+
+                            Circle()
+                                .trim(from: 0, to: value / total)
+                                .stroke(.black, style: .init(lineWidth: 4, lineCap: .round))
+                                .rotationEffect(.degrees(-90))
+                        }
+                        .padding(2)
+                    }
             }
-            #if os(macOS)
-            .controlSize(.small)
-            #endif
             .compositingGroup()
     }
 
-    @ViewBuilder
-    var progress: some View {
-        if let progression {
-            ProgressView(value: progression.value, total: progression.total)
-                .animation(progression.value == 0 ? nil : .default, value: progression.value)
-        } else {
-            ProgressView()
-        }
-    }
-
-    init() {
-        self.progression = nil
-    }
-
     init<V: BinaryFloatingPoint>(value: V, total: V = 1.0) {
-        self.progression = (Double(value), Double(total))
+        self.value = Double(value)
+        self.total = Double(total)
     }
-}
-
-#Preview("Indeterminate") {
-    HierarchicalProgressView()
-        .foregroundStyle(.linearGradient(
-            colors: [.blue, .red],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing)
-        )
 }
 
 #Preview("Determinate") {
-    HierarchicalProgressView(value: 0.42)
+    CircularProgressView(value: 0.42)
         .foregroundStyle(.linearGradient(
             colors: [.blue, .red],
             startPoint: .topLeading,
