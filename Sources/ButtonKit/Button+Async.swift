@@ -214,7 +214,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 
 #Preview("Indeterminate error") {
     AsyncButton {
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         throw NSError() as Error
     } label: {
         Text("Process")
