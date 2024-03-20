@@ -28,14 +28,32 @@
 import SwiftUI
 
 public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
+    public enum ProgressStyle: Sendable {
+        case bar
+        case percent
+    }
+
+    private var style: ProgressStyle
+    public init(style: ProgressStyle = .bar) {
+        self.style = style
+    }
 
     public func makeLabel(configuration: LabelConfiguration) -> some View {
         configuration.label
             .opacity(configuration.isLoading ? 0 : 1)
             .overlay {
                 if configuration.isLoading {
-                    HierarchicalProgressView()
+                    if let fractionCompleted = configuration.fractionCompleted {
+                        switch style {
+                        case .bar:
+                            HierarchicalProgressView(value: fractionCompleted)
+                        case .percent:
+                            Text(fractionCompleted, format: .percent)
+                                .monospacedDigit()
+                        }
+                    } else {
+                        HierarchicalProgressView()
+                    }
                 }
             }
             .animation(.default, value: configuration.isLoading)
@@ -43,12 +61,15 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
 }
 
 extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
-    public static var overlay: some AsyncButtonStyle {
+    public static var overlay: OverlayAsyncButtonStyle {
         OverlayAsyncButtonStyle()
+    }
+    public static func overlay(style: OverlayAsyncButtonStyle.ProgressStyle) -> OverlayAsyncButtonStyle {
+        OverlayAsyncButtonStyle(style: style)
     }
 }
 
-#Preview {
+#Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
     } label: {
@@ -56,4 +77,30 @@ extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
     }
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.overlay)
+}
+
+#Preview("Determinate (bar)") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 10_000_000)
+            progress.wrappedValue.completedUnitCount += 1
+        }
+    } label: {
+        Text("Overlay")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.overlay(style: .bar))
+}
+
+#Preview("Determinate (percent)") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 10_000_000)
+            progress.wrappedValue.completedUnitCount += 1
+        }
+    } label: {
+        Text("Overlay")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.overlay(style: .percent))
 }

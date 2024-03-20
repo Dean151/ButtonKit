@@ -32,16 +32,29 @@ public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
 }
 
 extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: some AsyncButtonStyle {
+    public static var none: NoStyleAsyncButtonStyle {
         NoStyleAsyncButtonStyle()
     }
 }
 
-#Preview {
+#Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
     } label: {
         Text("None")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.none)
+}
+
+#Preview("Determinate") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 10_000_000)
+            progress.wrappedValue.completedUnitCount += 1
+        }
+    } label: {
+        Text("Progress bar")
     }
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.none)

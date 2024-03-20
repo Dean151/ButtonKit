@@ -26,11 +26,10 @@
 //
 
 public struct DiscreteProgress: Progress {
-    let totalUnitCount: Int
+    public let totalUnitCount: Int
+    public var completedUnitCount = 0
 
-    public let isDeterminant = true
-
-    public func fractionCompleted(_ completedUnitCount: Int) -> Double {
+    public var fractionCompleted: Double? {
         Double(completedUnitCount) / Double(totalUnitCount)
     }
 }

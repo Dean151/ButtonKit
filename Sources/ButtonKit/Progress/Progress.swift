@@ -28,45 +28,5 @@
 import SwiftUI
 
 public protocol Progress: Sendable {
-    var isDeterminant: Bool { get }
-    func fractionCompleted(_ completedUnitCount: Int) -> Double
-}
-
-public struct TaskProgress: Sendable {
-    public let progress: Progress
-
-    public var completedUnitCount: Int = 0 {
-        willSet {
-            assert(completedUnitCount >= 0, "completedUnitCount must be positive")
-        }
-    }
-
-    public var fractionCompleted: Double {
-        progress.fractionCompleted(completedUnitCount)
-    }
-
-    mutating func reset() {
-        completedUnitCount = 0
-    }
-}
-
-// Sugar syntax on binding
-
-extension Binding<TaskProgress> {
-    public var progress: Progress {
-        wrappedValue.progress
-    }
-
-    public var completedUnitCount: Int {
-        get {
-            wrappedValue.completedUnitCount
-        }
-        nonmutating set {
-            wrappedValue.completedUnitCount = newValue
-        }
-    }
-
-    public var fractionCompleted: Double {
-        wrappedValue.fractionCompleted
-    }
+    var fractionCompleted: Double? { get }
 }

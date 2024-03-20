@@ -34,22 +34,40 @@ public struct TrailingAsyncButtonStyle: AsyncButtonStyle {
         HStack(spacing: 8) {
             configuration.label
             if configuration.isLoading {
-                HierarchicalProgressView()
+                if let fractionCompleted = configuration.fractionCompleted {
+                    CircularProgressView(value: fractionCompleted)
+                } else {
+                    HierarchicalProgressView()
+                }
             }
         }
         .animation(.default, value: configuration.isLoading)
+        .animation(.default, value: configuration.fractionCompleted)
     }
 }
 
 extension AsyncButtonStyle where Self == TrailingAsyncButtonStyle {
-    public static var trailing: some AsyncButtonStyle {
+    public static var trailing: TrailingAsyncButtonStyle {
         TrailingAsyncButtonStyle()
     }
 }
 
-#Preview {
+#Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
+    } label: {
+        Text("Trailing")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.trailing)
+}
+
+#Preview("Determinate") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 10_000_000)
+            progress.wrappedValue.completedUnitCount += 1
+        }
     } label: {
         Text("Trailing")
     }

@@ -89,7 +89,7 @@ public struct TryAgainThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle where Self == TryAgainThrowableButtonStyle {
-    public static var tryAgain: some ThrowableButtonStyle {
+    public static var tryAgain: TryAgainThrowableButtonStyle {
         TryAgainThrowableButtonStyle()
     }
 }
@@ -207,7 +207,7 @@ AsyncButton supports progress reporting:
 AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
     for file in files {
         try await file.doExpensiveComputation()
-        progress.completedUnitCount += 1
+        progress.wrappedValue.completedUnitCount += 1
     }
 } label: {
     Text("Process")
@@ -216,24 +216,21 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
 .buttonBorderShape(.roundedRectangle)
 ```
 
-Just like `AsyncButtonStyle` is used for indeterminate process, there is a `ProgressButtonStyle` for determinate progress:
+`AsyncButtonStyle` now also supports determinate progress as well, responding to `configuration.fractionCompleted: Double?` property:
 
 ```swift
 AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
     for file in files {
         try await file.doExpensiveComputation()
-        progress.completedUnitCount += 1
+        progress.wrappedValue.completedUnitCount += 1
     }
 } label: {
     Text("Process")
 }
 .buttonStyle(.borderedProminent)
 .buttonBorderShape(.roundedRectangle)
-.progressButtonStyle(.trailing)
+.asyncButtonStyle(.trailing)
 ```
-
-You can also build your own customization by implementing the `ProgressButtonStyle` protocol.
-All sort of styles are built-in:
 
 <table>
     <tr>
@@ -241,20 +238,21 @@ All sort of styles are built-in:
         <td><img src="/Preview/percent.gif" width="250"></td>
     </tr>
     <tr>
-        <td>.progressButtonStyle(.bar)</td>
-        <td>.progressButtonStyle(.percent)</td>
+        <td>.asyncButtonStyle(.overlay)</td>
+        <td>.asyncButtonStyle(.overlay(style: .percent))</td>
     </tr>
     <tr>
         <td><img src="/Preview/progress-leading.gif" width="250"></td>
         <td><img src="/Preview/progress-trailing.gif" width="250"></td>
     </tr>
     <tr>
-        <td>.progressButtonStyle(.leading)</td>
-        <td>.progressButtonStyle(.trailing)</td>
+        <td>.asyncButtonStyle(.leading)</td>
+        <td>.asyncButtonStyle(.trailing)</td>
     </tr>
 </table>
 
-You can also manage the Progress type by implementing the `Progress` protocol. This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
+You can also create your own progression logic by implementing the `Progress` protocol. 
+This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
 
 ## Contribute
 

@@ -26,15 +26,11 @@
 //
 
 public struct IndeterminateProgress: Progress {
-    public let isDeterminant = false
-
-    public func fractionCompleted(_ completedUnitCount: Int) -> Double {
-        fatalError("No fraction possible for indeterminate progress")
-    }
+    public let fractionCompleted: Double? = nil
 }
 
 extension Progress where Self == IndeterminateProgress {
-    public static var indeterminate: some Progress {
+    public static var indeterminate: IndeterminateProgress {
         IndeterminateProgress()
     }
 }

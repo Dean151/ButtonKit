@@ -56,16 +56,24 @@ extension AsyncButtonStyle {
 public struct AsyncButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
-    public let isLoading: Bool
     public let label: Label
+    /// Returns true if the button is in a loading state, and false if the button is idle
+    public let isLoading: Bool
+    /// Returns the fraction completed when the task is determinate. nil when the task is indeterminate
+    public let fractionCompleted: Double?
+    /// A callable closure to cancel the current task if any
     public let cancel: () -> Void
 }
 
 public struct AsyncButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
-    public let isLoading: Bool
     public let button: Button
+    /// Returns true if the button is in a loading state, and false if the button is idle
+    public let isLoading: Bool
+    /// Returns the fraction completed when the task is determinate. nil when the task is indeterminate
+    public let fractionCompleted: Double?
+    /// A callable closure to cancel the current task if any
     public let cancel: () -> Void
 }
 
