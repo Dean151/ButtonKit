@@ -27,9 +27,7 @@
 
 import SwiftUI
 
-struct HierarchicalProgressView: View {
-    let progression: (value: Double, total: Double)?
-
+struct IndeterminateProgressView: View {
     var body: some View {
         progress
             .opacity(0)
@@ -46,34 +44,14 @@ struct HierarchicalProgressView: View {
 
     @ViewBuilder
     var progress: some View {
-        if let progression {
-            ProgressView(value: progression.value, total: progression.total)
-                .animation(progression.value == 0 ? nil : .default, value: progression.value)
-        } else {
-            ProgressView()
-        }
+        ProgressView()
     }
 
-    init() {
-        self.progression = nil
-    }
-
-    init<V: BinaryFloatingPoint>(value: V, total: V = 1.0) {
-        self.progression = (Double(value), Double(total))
-    }
+    init() {}
 }
 
-#Preview("Indeterminate") {
-    HierarchicalProgressView()
-        .foregroundStyle(.linearGradient(
-            colors: [.blue, .red],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing)
-        )
-}
-
-#Preview("Determinate") {
-    HierarchicalProgressView(value: 0.42)
+#Preview {
+    IndeterminateProgressView()
         .foregroundStyle(.linearGradient(
             colors: [.blue, .red],
             startPoint: .topLeading,

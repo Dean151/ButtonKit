@@ -37,7 +37,7 @@ public struct TrailingAsyncButtonStyle: AsyncButtonStyle {
                 if let fractionCompleted = configuration.fractionCompleted {
                     CircularProgressView(value: fractionCompleted)
                 } else {
-                    HierarchicalProgressView()
+                    IndeterminateProgressView()
                 }
             }
         }

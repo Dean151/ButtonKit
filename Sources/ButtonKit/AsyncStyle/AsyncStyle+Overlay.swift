@@ -46,13 +46,13 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
                     if let fractionCompleted = configuration.fractionCompleted {
                         switch style {
                         case .bar:
-                            HierarchicalProgressView(value: fractionCompleted)
+                            BarProgressView(value: fractionCompleted)
                         case .percent:
                             Text(fractionCompleted, format: .percent)
                                 .monospacedDigit()
                         }
                     } else {
-                        HierarchicalProgressView()
+                        IndeterminateProgressView()
                     }
                 }
             }
