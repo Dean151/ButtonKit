@@ -25,6 +25,7 @@
 //  SOFTWARE.
 //
 
+/// Indeterminate progress is the default progress mode, where the progress is always indeterminate
 public struct IndeterminateProgress: Progress {
     public let fractionCompleted: Double? = nil
 }

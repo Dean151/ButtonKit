@@ -25,9 +25,14 @@
 //  SOFTWARE.
 //
 
+/// Represents a discrete and linear progress
 public struct DiscreteProgress: Progress {
     public let totalUnitCount: Int
-    public var completedUnitCount = 0
+    public var completedUnitCount = 0 {
+        willSet {
+            assert(newValue >= 0 && newValue <= totalUnitCount, "Discrete progression requires completedUnitCount to be in 0...\(totalUnitCount)")
+        }
+    }
 
     public var fractionCompleted: Double? {
         Double(completedUnitCount) / Double(totalUnitCount)

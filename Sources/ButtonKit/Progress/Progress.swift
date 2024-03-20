@@ -28,5 +28,7 @@
 import SwiftUI
 
 public protocol Progress: Sendable {
+    /// Report nil when the progress is indeterminate, and report a Double between 0 and 1 when the progress is determinate
+    /// A progress can alternate from determinate to intedeterminate if necessary, and vice versa
     var fractionCompleted: Double? { get }
 }
