@@ -32,7 +32,7 @@ public struct NoStyleThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle where Self == NoStyleThrowableButtonStyle {
-    public static var none: some ThrowableButtonStyle {
+    public static var none: NoStyleThrowableButtonStyle {
         NoStyleThrowableButtonStyle()
     }
 }

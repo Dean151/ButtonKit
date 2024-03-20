@@ -57,18 +57,26 @@ public struct ThrowableButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
     public let label: Label
+    /// Is incremented at each new error
     public let errorCount: Int
 }
 public struct ThrowableButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
     public let button: Button
+    /// Is incremented at each new error
     public let errorCount: Int
 }
 // MARK: SwiftUI Environment
 
+extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
+    public static var auto: some ThrowableButtonStyle {
+        ShakeThrowableButtonStyle()
+    }
+}
+
 struct ThrowableButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.shake)
+    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.auto)
 }
 
 extension EnvironmentValues {

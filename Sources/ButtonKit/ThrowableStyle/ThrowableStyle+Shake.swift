@@ -38,7 +38,7 @@ public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
-    public static var shake: some ThrowableButtonStyle {
+    public static var shake: ShakeThrowableButtonStyle {
         ShakeThrowableButtonStyle()
     }
 }

@@ -39,7 +39,7 @@ public struct PulseAsyncButtonStyle: AsyncButtonStyle {
 }
 
 extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
-    public static var pulse: some AsyncButtonStyle {
+    public static var pulse: PulseAsyncButtonStyle {
         PulseAsyncButtonStyle()
     }
 }

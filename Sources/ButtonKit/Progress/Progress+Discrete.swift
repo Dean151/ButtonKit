@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  Progress+Discrete.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,37 +25,23 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
-
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
-}
-
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: NoStyleAsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
-    }
-}
-
-#Preview("Indeterminate") {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("None")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
-}
-
-#Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
-        for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
+/// Represents a discrete and linear progress
+public struct DiscreteProgress: Progress {
+    public let totalUnitCount: Int
+    public var completedUnitCount = 0 {
+        willSet {
+            assert(newValue >= 0 && newValue <= totalUnitCount, "Discrete progression requires completedUnitCount to be in 0...\(totalUnitCount)")
         }
-    } label: {
-        Text("Progress bar")
     }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
+
+    public var fractionCompleted: Double? {
+        Double(completedUnitCount) / Double(totalUnitCount)
+    }
+}
+
+extension Progress where Self == DiscreteProgress {
+    public static func discrete(totalUnitCount: Int) -> DiscreteProgress {
+        assert(totalUnitCount > 0, "Discrete progression requires totalUnitCount to be positive")
+        return DiscreteProgress(totalUnitCount: totalUnitCount)
+    }
 }

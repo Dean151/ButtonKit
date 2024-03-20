@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  HierarchicalProgressView.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,35 +27,34 @@
 
 import SwiftUI
 
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
+struct IndeterminateProgressView: View {
+    var body: some View {
+        progress
+            .opacity(0)
+            .overlay {
+                Rectangle()
+                    .fill(.primary)
+                    .mask { progress }
+            }
+            #if os(macOS)
+            .controlSize(.small)
+            #endif
+            .compositingGroup()
+    }
+
+    @ViewBuilder
+    var progress: some View {
+        ProgressView()
+    }
+
+    init() {}
 }
 
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: NoStyleAsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
-    }
-}
-
-#Preview("Indeterminate") {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("None")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
-}
-
-#Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
-        for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
-        }
-    } label: {
-        Text("Progress bar")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
+#Preview {
+    IndeterminateProgressView()
+        .foregroundStyle(.linearGradient(
+            colors: [.blue, .red],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        )
 }

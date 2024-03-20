@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  Progress.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,35 +27,8 @@
 
 import SwiftUI
 
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
-}
-
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: NoStyleAsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
-    }
-}
-
-#Preview("Indeterminate") {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("None")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
-}
-
-#Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
-        for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
-        }
-    } label: {
-        Text("Progress bar")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
+public protocol Progress: Sendable {
+    /// Report nil when the progress is indeterminate, and report a Double between 0 and 1 when the progress is determinate
+    /// A progress can alternate from determinate to intedeterminate if necessary, and vice versa
+    var fractionCompleted: Double? { get }
 }

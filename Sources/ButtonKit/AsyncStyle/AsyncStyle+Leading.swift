@@ -33,23 +33,41 @@ public struct LeadingAsyncButtonStyle: AsyncButtonStyle {
     public func makeLabel(configuration: LabelConfiguration) -> some View {
         HStack(spacing: 8) {
             if configuration.isLoading {
-                HierarchicalProgressView()
+                if let fractionCompleted = configuration.fractionCompleted {
+                    CircularProgressView(value: fractionCompleted)
+                } else {
+                    IndeterminateProgressView()
+                }
             }
             configuration.label
         }
         .animation(.default, value: configuration.isLoading)
+        .animation(.default, value: configuration.fractionCompleted)
     }
 }
 
 extension AsyncButtonStyle where Self == LeadingAsyncButtonStyle {
-    public static var leading: some AsyncButtonStyle {
+    public static var leading: LeadingAsyncButtonStyle {
         LeadingAsyncButtonStyle()
     }
 }
 
-#Preview {
+#Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
+    } label: {
+        Text("Leading")
+    }
+    .buttonStyle(.borderedProminent)
+    .asyncButtonStyle(.leading)
+}
+
+#Preview("Determinate") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 10_000_000)
+            progress.wrappedValue.completedUnitCount += 1
+        }
     } label: {
         Text("Leading")
     }

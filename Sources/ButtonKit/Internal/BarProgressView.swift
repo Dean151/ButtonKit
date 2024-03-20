@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  BarProgressView.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,35 +27,41 @@
 
 import SwiftUI
 
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
-}
+struct BarProgressView: View {
+    let value: Double
+    let total: Double
 
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: NoStyleAsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
+    var body: some View {
+        progress
+            .opacity(0)
+            .overlay {
+                Rectangle()
+                    .fill(.primary)
+                    .mask { progress }
+            }
+            #if os(macOS)
+            .controlSize(.small)
+            #endif
+            .compositingGroup()
+    }
+
+    @ViewBuilder
+    var progress: some View {
+        ProgressView(value: value, total: total)
+            .progressViewStyle(.linear)
+    }
+
+    init<V: BinaryFloatingPoint>(value: V, total: V = 1.0) {
+        self.value = Double(value)
+        self.total = Double(total)
     }
 }
 
-#Preview("Indeterminate") {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("None")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
-}
-
-#Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
-        for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
-        }
-    } label: {
-        Text("Progress bar")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
+#Preview {
+    BarProgressView(value: 0.42)
+        .foregroundStyle(.linearGradient(
+            colors: [.blue, .red],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        )
 }

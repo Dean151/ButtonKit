@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  Progress+Indeterminate.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,37 +25,13 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
-
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
+/// Indeterminate progress is the default progress mode, where the progress is always indeterminate
+public struct IndeterminateProgress: Progress {
+    public let fractionCompleted: Double? = nil
 }
 
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: NoStyleAsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
+extension Progress where Self == IndeterminateProgress {
+    public static var indeterminate: IndeterminateProgress {
+        IndeterminateProgress()
     }
-}
-
-#Preview("Indeterminate") {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("None")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
-}
-
-#Preview("Determinate") {
-    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
-        for _ in 1...100 {
-            try await Task.sleep(nanoseconds: 10_000_000)
-            progress.wrappedValue.completedUnitCount += 1
-        }
-    } label: {
-        Text("Progress bar")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
 }
