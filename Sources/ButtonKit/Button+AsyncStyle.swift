@@ -79,8 +79,14 @@ public struct AsyncButtonStyleButtonConfiguration {
 
 // MARK: SwiftUI Environment
 
+extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
+    public static var auto: some AsyncButtonStyle {
+        OverlayAsyncButtonStyle(style: .bar)
+    }
+}
+
 struct AsyncButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.overlay)
+    static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.auto)
 }
 
 extension EnvironmentValues {

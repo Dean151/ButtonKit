@@ -69,8 +69,14 @@ public struct ThrowableButtonStyleButtonConfiguration {
 }
 // MARK: SwiftUI Environment
 
+extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
+    public static var auto: some ThrowableButtonStyle {
+        ShakeThrowableButtonStyle()
+    }
+}
+
 struct ThrowableButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.shake)
+    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.auto)
 }
 
 extension EnvironmentValues {
