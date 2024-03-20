@@ -69,6 +69,7 @@ struct AsyncButtonTaskPreferenceKey: PreferenceKey {
 
 struct OnAsyncButtonTaskChangeModifier: ViewModifier {
     let handler: AsyncButtonTaskChangedHandler
+    @State private var initialized = false
 
     init(handler: @escaping AsyncButtonTaskChangedHandler) {
         self.handler = handler
@@ -77,7 +78,13 @@ struct OnAsyncButtonTaskChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(AsyncButtonTaskPreferenceKey.self) { task in
-                self.handler(task)
+                if task == nil && !initialized {
+                    // Ignore first preference change, a.k.a button initialization
+                    initialized = true
+                    return
+                }
+
+                handler(task)
             }
     }
 }
