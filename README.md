@@ -207,7 +207,7 @@ AsyncButton supports progress reporting:
 AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
     for file in files {
         try await file.doExpensiveComputation()
-        progress.wrappedValue.completedUnitCount += 1
+        progress.completedUnitCount += 1
     }
 } label: {
     Text("Process")
@@ -222,7 +222,7 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
 AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
     for file in files {
         try await file.doExpensiveComputation()
-        progress.wrappedValue.completedUnitCount += 1
+        progress.completedUnitCount += 1
     }
 } label: {
     Text("Process")
