@@ -42,6 +42,7 @@ struct BarProgressView: View {
             #if os(macOS)
             .controlSize(.small)
             #endif
+            .animation(value == 0 ? nil : .default, value: value)
             .compositingGroup()
     }
 

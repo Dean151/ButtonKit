@@ -27,8 +27,21 @@
 
 import SwiftUI
 
-public protocol Progress: Sendable {
+public protocol Progress: Sendable, ObservableObject {
     /// Report nil when the progress is indeterminate, and report a Double between 0 and 1 when the progress is determinate
     /// A progress can alternate from determinate to intedeterminate if necessary, and vice versa
-    var fractionCompleted: Double? { get }
+    @MainActor var fractionCompleted: Double? { get }
+
+    /// Should reset the progres to it's initial value
+    @MainActor func reset()
+
+    @MainActor
+    func started() async
+    @MainActor
+    func ended() async
+}
+
+extension Progress {
+    public func started() async {}
+    public func ended() async {}
 }

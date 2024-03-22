@@ -25,17 +25,28 @@
 //  SOFTWARE.
 //
 
+import Combine
+
 /// Represents a discrete and linear progress
-public struct DiscreteProgress: Progress {
+@MainActor
+public final class DiscreteProgress: Progress {
     public let totalUnitCount: Int
-    public var completedUnitCount = 0 {
+    @Published public var completedUnitCount = 0 {
         willSet {
             assert(newValue >= 0 && newValue <= totalUnitCount, "Discrete progression requires completedUnitCount to be in 0...\(totalUnitCount)")
         }
     }
 
+    public func reset() {
+        completedUnitCount = 0
+    }
+
     public var fractionCompleted: Double? {
         Double(completedUnitCount) / Double(totalUnitCount)
+    }
+
+    nonisolated init(totalUnitCount: Int) {
+        self.totalUnitCount = totalUnitCount
     }
 }
 

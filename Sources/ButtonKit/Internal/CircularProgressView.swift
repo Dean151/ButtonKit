@@ -54,6 +54,7 @@ struct CircularProgressView: View {
                         .padding(2)
                     }
             }
+            .animation(value == 0 ? nil : .default, value: value)
             .compositingGroup()
     }
 

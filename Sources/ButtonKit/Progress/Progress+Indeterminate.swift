@@ -26,8 +26,9 @@
 //
 
 /// Indeterminate progress is the default progress mode, where the progress is always indeterminate
-public struct IndeterminateProgress: Progress {
+public final class IndeterminateProgress: Progress {
     public let fractionCompleted: Double? = nil
+    public func reset() {}
 }
 
 extension Progress where Self == IndeterminateProgress {
