@@ -36,13 +36,13 @@ extension View {
 }
 
 public protocol AsyncButtonStyle: Sendable {
-    associatedtype Label: View
-    associatedtype Button: View
+    associatedtype ButtonLabel: View
+    associatedtype ButtonView: View
     typealias LabelConfiguration = AsyncButtonStyleLabelConfiguration
     typealias ButtonConfiguration = AsyncButtonStyleButtonConfiguration
 
-    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> Label
-    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> Button
+    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> ButtonLabel
+    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> ButtonView
 }
 extension AsyncButtonStyle {
     public func makeLabel(configuration: LabelConfiguration) -> some View {
