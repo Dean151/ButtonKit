@@ -34,7 +34,7 @@ public struct PulseAsyncButtonStyle: AsyncButtonStyle {
         configuration.button
             .compositingGroup()
             .opacity(configuration.isLoading ? 0.5 : 1)
-            .animation(.linear(duration: 1).repeatForever(), value: configuration.isLoading)
+            .animation(configuration.isLoading ? .linear(duration: 1).repeatForever() : nil, value: configuration.isLoading)
     }
 }
 
@@ -46,7 +46,7 @@ extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
 
 #Preview {
     AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
+        try await Task.sleep(nanoseconds: 5_000_000_000)
     } label: {
         Text("Pulse")
     }
