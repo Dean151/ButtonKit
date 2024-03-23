@@ -26,12 +26,12 @@
 //
 
 /// Indeterminate progress is the default progress mode, where the progress is always indeterminate
-public final class IndeterminateProgress: Progress {
+public final class IndeterminateProgress: TaskProgress {
     public let fractionCompleted: Double? = nil
     public func reset() {}
 }
 
-extension Progress where Self == IndeterminateProgress {
+extension TaskProgress where Self == IndeterminateProgress {
     public static var indeterminate: IndeterminateProgress {
         IndeterminateProgress()
     }

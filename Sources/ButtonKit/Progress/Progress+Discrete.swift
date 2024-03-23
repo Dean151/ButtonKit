@@ -29,7 +29,7 @@ import Combine
 
 /// Represents a discrete and linear progress
 @MainActor
-public final class DiscreteProgress: Progress {
+public final class DiscreteProgress: TaskProgress {
     public let totalUnitCount: Int
     @Published public var completedUnitCount = 0 {
         willSet {
@@ -50,7 +50,7 @@ public final class DiscreteProgress: Progress {
     }
 }
 
-extension Progress where Self == DiscreteProgress {
+extension TaskProgress where Self == DiscreteProgress {
     public static func discrete(totalUnitCount: Int) -> DiscreteProgress {
         assert(totalUnitCount > 0, "Discrete progression requires totalUnitCount to be positive")
         return DiscreteProgress(totalUnitCount: totalUnitCount)

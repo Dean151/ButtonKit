@@ -48,7 +48,7 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
                         case .bar:
                             BarProgressView(value: fractionCompleted)
                         case .percent:
-                            Text(fractionCompleted, format: .percent)
+                            Text(fractionCompleted, format: .percent.rounded(increment: 1))
                                 .monospacedDigit()
                         }
                     } else {

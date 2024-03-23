@@ -27,7 +27,7 @@
 
 import SwiftUI
 
-public struct AsyncButton<P: Progress, S: View>: View {
+public struct AsyncButton<P: TaskProgress, S: View>: View {
     @Environment(\.asyncButtonStyle)
     private var asyncButtonStyle
     @Environment(\.allowsHitTestingWhenLoading)
