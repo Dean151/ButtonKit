@@ -33,7 +33,7 @@ public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
     public func makeButton(configuration: ButtonConfiguration) -> some View {
         configuration.button
             .modifier(Shake(animatableData: CGFloat(configuration.errorCount)))
-            .animation(.default, value: configuration.errorCount)
+            .animation(.easeInOut, value: configuration.errorCount)
     }
 }
 
@@ -45,7 +45,7 @@ extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
 
 struct Shake: GeometryEffect {
     var amount: CGFloat = 10
-    var shakesPerUnit = 3
+    var shakesPerUnit = 4
     var animatableData: CGFloat
 
     func effectValue(size: CGSize) -> ProjectionTransform {
