@@ -106,7 +106,6 @@ struct DurationSleeper: Sleeper {
     .asyncButtonStyle(.overlay)
 }
 
-
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, visionOS 1.0, *)
 #Preview("Duration signature") {
     AsyncButton(progress: .estimated(for: .seconds(1))) { progress in
