@@ -80,6 +80,30 @@ extension ThrowableButton where S == Text {
     }
 }
 
+extension ThrowableButton where S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () throws -> Void
+    ) {
+        self.role = role
+        self.action = action
+        self.label = Label(titleKey, systemImage: systemImage)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () throws -> Void
+    ) {
+        self.role = role
+        self.action = action
+        self.label = Label(title, systemImage: systemImage)
+    }
+}
+
 #Preview("Error") {
     ThrowableButton {
         throw NSError() as Error
