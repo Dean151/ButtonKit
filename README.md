@@ -18,7 +18,7 @@ Install using Swift Package Manager
 
 ```
 dependencies: [
-    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.1.0"),
+    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.3.0"),
 ],
 targets: [
     .target(name: "MyTarget", dependencies: [
@@ -29,7 +29,6 @@ targets: [
 
 And import it:
 ```swift
-import SwiftUI
 import ButtonKit
 ```
 
@@ -89,7 +88,7 @@ public struct TryAgainThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle where Self == TryAgainThrowableButtonStyle {
-    public static var tryAgain: some ThrowableButtonStyle {
+    public static var tryAgain: TryAgainThrowableButtonStyle {
         TryAgainThrowableButtonStyle()
     }
 }
@@ -161,7 +160,7 @@ AsyncButton {
 }
 ```
 
-While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressIndicator`.
+While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressView`.
 All sort of styles are built-in:
 
 <table>
@@ -198,6 +197,67 @@ AsyncButton {
 You can also build your own customization by implementing `AsyncButtonStyle` protocol.
 
 Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allow you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
+
+### Deterministic progress
+
+AsyncButton supports progress reporting:
+
+```swift
+AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
+    for file in files {
+        try await file.doExpensiveComputation()
+        progress.completedUnitCount += 1
+    }
+} label: {
+    Text("Process")
+}
+.buttonStyle(.borderedProminent)
+.buttonBorderShape(.roundedRectangle)
+```
+
+`AsyncButtonStyle` now also supports determinate progress as well, responding to `configuration.fractionCompleted: Double?` property:
+
+```swift
+AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
+    for file in files {
+        try await file.doExpensiveComputation()
+        progress.completedUnitCount += 1
+    }
+} label: {
+    Text("Process")
+}
+.buttonStyle(.borderedProminent)
+.buttonBorderShape(.roundedRectangle)
+.asyncButtonStyle(.trailing)
+```
+
+<table>
+    <tr>
+        <td><img src="/Preview/determinant-bar.gif" width="250"></td>
+        <td><img src="/Preview/determinant-percent.gif" width="250"></td>
+    </tr>
+    <tr>
+        <td>.asyncButtonStyle(.overlay)</td>
+        <td>.asyncButtonStyle(.overlay(style: .percent))</td>
+    </tr>
+    <tr>
+        <td><img src="/Preview/determinant-leading.gif" width="250"></td>
+        <td><img src="/Preview/determinant-trailing.gif" width="250"></td>
+    </tr>
+    <tr>
+        <td>.asyncButtonStyle(.leading)</td>
+        <td>.asyncButtonStyle(.trailing)</td>
+    </tr>
+</table>
+
+You can also create your own progression logic by implementing the `TaskProgress` protocol. 
+This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
+
+Available TaskProgress implementation are:
+- Indeterminate, default non-determinant progress with `.indeterminate`
+- Discrete linear (completed / total) with `.discrete(totalUnitsCount: Int)`
+- Estimated progress that fill the bar in the provided time interval, stopping à 85% to simulate a determinant loading with `.estimated(for: Duration)`
+- (NS)Progress bridge with `.progress`
 
 ## Contribute
 

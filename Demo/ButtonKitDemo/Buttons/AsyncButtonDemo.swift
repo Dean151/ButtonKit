@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+Trailing.swift
+//  ThrowableButton.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,34 +25,52 @@
 //  SOFTWARE.
 //
 
+import ButtonKit
 import SwiftUI
 
-public struct TrailingAsyncButtonStyle: AsyncButtonStyle {
-    public init() {}
-
-    public func makeLabel(configuration: LabelConfiguration) -> some View {
-        HStack(spacing: 8) {
-            configuration.label
-            if configuration.isLoading {
-                HierarchicalProgressView()
+struct AsyncButtonDemo: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            AsyncButton {
+                // Here you have a throwable & async closure!
+                try await Task.sleep(for: .seconds(2))
+            } label: {
+                Text("Overlay style")
             }
-        }
-        .animation(.default, value: configuration.isLoading)
-    }
-}
+            .asyncButtonStyle(.overlay)
 
-extension AsyncButtonStyle where Self == TrailingAsyncButtonStyle {
-    public static var trailing: some AsyncButtonStyle {
-        TrailingAsyncButtonStyle()
+            AsyncButton {
+                try await Task.sleep(for: .seconds(2))
+            } label: {
+                Text("Leading style")
+            }
+            .asyncButtonStyle(.leading)
+
+            AsyncButton {
+                try await Task.sleep(for: .seconds(2))
+            } label: {
+                Text("Trailing style")
+            }
+            .asyncButtonStyle(.trailing)
+
+            AsyncButton {
+                try await Task.sleep(for: .seconds(2))
+            } label: {
+                Text("Pulse style")
+            }
+            .asyncButtonStyle(.pulse)
+
+            AsyncButton {
+                try await Task.sleep(for: .seconds(2))
+            } label: {
+                Text("No style")
+            }
+            .asyncButtonStyle(.none)
+        }
+        .buttonStyle(.borderedProminent)
     }
 }
 
 #Preview {
-    AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
-    } label: {
-        Text("Trailing")
-    }
-    .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.trailing)
+    AsyncButtonDemo()
 }

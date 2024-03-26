@@ -1,5 +1,5 @@
 //
-//  AsyncStyle+None.swift
+//  AsyncStyle+Pulse.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,22 +27,29 @@
 
 import SwiftUI
 
-public struct NoStyleAsyncButtonStyle: AsyncButtonStyle {
+public struct PulseAsyncButtonStyle: AsyncButtonStyle {
     public init() {}
+
+    public func makeButton(configuration: ButtonConfiguration) -> some View {
+        configuration.button
+            .compositingGroup()
+            .opacity(configuration.isLoading ? 0.5 : 1)
+            .animation(configuration.isLoading ? .linear(duration: 1).repeatForever() : nil, value: configuration.isLoading)
+    }
 }
 
-extension AsyncButtonStyle where Self == NoStyleAsyncButtonStyle {
-    public static var none: some AsyncButtonStyle {
-        NoStyleAsyncButtonStyle()
+extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
+    public static var pulse: PulseAsyncButtonStyle {
+        PulseAsyncButtonStyle()
     }
 }
 
 #Preview {
     AsyncButton {
-        try await Task.sleep(nanoseconds: 30_000_000_000)
+        try await Task.sleep(nanoseconds: 5_000_000_000)
     } label: {
-        Text("None")
+        Text("Pulse")
     }
     .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.none)
+    .asyncButtonStyle(.pulse)
 }

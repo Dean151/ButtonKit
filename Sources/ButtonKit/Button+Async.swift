@@ -27,7 +27,7 @@
 
 import SwiftUI
 
-public struct AsyncButton<S: View>: View {
+public struct AsyncButton<P: TaskProgress, S: View>: View {
     @Environment(\.asyncButtonStyle)
     private var asyncButtonStyle
     @Environment(\.allowsHitTestingWhenLoading)
@@ -38,10 +38,11 @@ public struct AsyncButton<S: View>: View {
     private var throwableButtonStyle
 
     private let role: ButtonRole?
-    private let action: () async throws -> Void
+    private let action: @MainActor (P) async throws -> Void
     private let label: S
 
     @State private var task: Task<Void, Never>?
+    @ObservedObject private var progress: P
     @State private var errorCount = 0
 
     public var body: some View {
@@ -49,22 +50,29 @@ public struct AsyncButton<S: View>: View {
             label: AnyView(label),
             errorCount: errorCount
         )
+        let label: AnyView
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
-            isLoading: task != nil,
             label: AnyView(throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)),
-            cancel: { task?.cancel() }
+            isLoading: task != nil,
+            fractionCompleted: progress.fractionCompleted,
+            cancel: cancel
         )
-        let label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
+        label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
         let button = Button(role: role) {
             guard task == nil else {
                 return
             }
             task = Task {
+                // Initialize progress
+                progress.reset()
+                await progress.started()
                 do {
-                    try await action()
+                    try await action(progress)
                 } catch {
                     errorCount += 1
                 }
+                // Reset progress
+                await progress.ended()
                 task = nil
             }
         } label: {
@@ -75,9 +83,10 @@ public struct AsyncButton<S: View>: View {
             errorCount: errorCount
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
-            isLoading: task != nil,
             button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
-            cancel: { task?.cancel() }
+            isLoading: task != nil,
+            fractionCompleted: progress.fractionCompleted,
+            cancel: cancel
         )
         return asyncButtonStyle
             .makeButton(configuration: asyncConfiguration)
@@ -86,30 +95,144 @@ public struct AsyncButton<S: View>: View {
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
     }
 
-    public init(role: ButtonRole? = nil, action: @escaping () async throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
         self.role = role
+        self._progress = .init(initialValue: progress)
         self.action = action
         self.label = label()
+    }
+
+    private func cancel() {
+        task?.cancel()
+        task = nil
     }
 }
 
 extension AsyncButton where S == Text {
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () async throws -> Void) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
         self.role = role
+        self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Text(titleKey)
     }
 
-    public init(_ title: some StringProtocol, role: ButtonRole? = nil, action: @escaping () async throws -> Void) {
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
         self.role = role
+        self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Text(title)
     }
 }
 
-#Preview("Success") {
+extension AsyncButton where S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, systemImage: systemImage)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(title, systemImage: systemImage)
+    }
+}
+
+extension AsyncButton where P == IndeterminateProgress {
+    public init(
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = label()
+    }
+}
+
+extension AsyncButton where P == IndeterminateProgress, S == Text {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Text(titleKey)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Text(title)
+    }
+}
+
+extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, systemImage: systemImage)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(title, systemImage: systemImage)
+    }
+}
+
+#Preview("Indeterminate") {
     AsyncButton {
-        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
     } label: {
         Text("Process")
     }
@@ -117,9 +240,22 @@ extension AsyncButton where S == Text {
     .buttonBorderShape(.roundedRectangle)
 }
 
-#Preview("Error") {
+#Preview("Determinate") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...100 {
+            try await Task.sleep(nanoseconds: 20_000_000)
+            progress.completedUnitCount += 1
+        }
+    } label: {
+        Text("Process")
+    }
+    .buttonStyle(.borderedProminent)
+    .buttonBorderShape(.roundedRectangle)
+}
+
+#Preview("Indeterminate error") {
     AsyncButton {
-        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         throw NSError() as Error
     } label: {
         Text("Process")
@@ -128,4 +264,18 @@ extension AsyncButton where S == Text {
     .buttonBorderShape(.roundedRectangle)
     .asyncButtonStyle(.overlay)
     .throwableButtonStyle(.shake)
+}
+
+#Preview("Determinate error") {
+    AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
+        for _ in 1...42 {
+            try await Task.sleep(nanoseconds: 20_000_000)
+            progress.completedUnitCount += 1
+        }
+        throw NSError() as Error
+    } label: {
+        Text("Process")
+    }
+    .buttonStyle(.borderedProminent)
+    .buttonBorderShape(.roundedRectangle)
 }

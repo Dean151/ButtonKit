@@ -1,5 +1,5 @@
 //
-//  HierarchicalProgressView.swift
+//  Progress.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,29 +27,21 @@
 
 import SwiftUI
 
-struct HierarchicalProgressView: View {
-    var body: some View {
-        ProgressView()
-            .opacity(0)
-            .overlay {
-                Rectangle()
-                    .fill(.primary)
-                    .mask { ProgressView() }
-            }
-            #if os(macOS)
-            .controlSize(.small)
-            #endif
-            .compositingGroup()
-    }
+public protocol TaskProgress: Sendable, ObservableObject {
+    /// Report nil when the progress is indeterminate, and report a Double between 0 and 1 when the progress is determinate
+    /// A progress can alternate from determinate to intedeterminate if necessary, and vice versa
+    @MainActor var fractionCompleted: Double? { get }
 
-    init() {}
+    /// Should reset the progres to it's initial value
+    @MainActor func reset()
+
+    @MainActor
+    func started() async
+    @MainActor
+    func ended() async
 }
 
-#Preview {
-    HierarchicalProgressView()
-        .foregroundStyle(.linearGradient(
-            colors: [.blue, .red],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing)
-        )
+extension TaskProgress {
+    public func started() async {}
+    public func ended() async {}
 }

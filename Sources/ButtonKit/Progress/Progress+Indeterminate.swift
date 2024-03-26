@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+Shake.swift
+//  Progress+Indeterminate.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,40 +25,14 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
-
-public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
-    public init() {}
-
-    public func makeButton(configuration: ButtonConfiguration) -> some View {
-        configuration.button
-            .modifier(Shake(animatableData: CGFloat(configuration.errorCount)))
-            .animation(.easeInOut, value: configuration.errorCount)
-    }
+/// Indeterminate progress is the default progress mode, where the progress is always indeterminate
+public final class IndeterminateProgress: TaskProgress {
+    public let fractionCompleted: Double? = nil
+    public func reset() {}
 }
 
-extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
-    public static var shake: some ThrowableButtonStyle {
-        ShakeThrowableButtonStyle()
+extension TaskProgress where Self == IndeterminateProgress {
+    public static var indeterminate: IndeterminateProgress {
+        IndeterminateProgress()
     }
-}
-
-struct Shake: GeometryEffect {
-    var amount: CGFloat = 10
-    var shakesPerUnit = 4
-    var animatableData: CGFloat
-
-    func effectValue(size: CGSize) -> ProjectionTransform {
-        ProjectionTransform(CGAffineTransform(translationX: amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)), y: 0))
-    }
-}
-
-#Preview {
-    ThrowableButton {
-        throw NSError() as Error
-    } label: {
-        Text("Shake")
-    }
-    .buttonStyle(.borderedProminent)
-    .throwableButtonStyle(.shake)
 }

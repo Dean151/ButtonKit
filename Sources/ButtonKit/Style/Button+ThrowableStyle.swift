@@ -1,5 +1,5 @@
 //
-//  Button+AsyncStyle.swift
+//  Button+ThrowableStyle.swift
 //  ButtonKit
 //
 //  MIT License
@@ -30,21 +30,21 @@ import SwiftUI
 // MARK: Public protocol
 
 extension View {
-    public func asyncButtonStyle<S: AsyncButtonStyle>(_ style: S) -> some View {
-        environment(\.asyncButtonStyle, AnyAsyncButtonStyle(style))
+    public func throwableButtonStyle<S: ThrowableButtonStyle>(_ style: S) -> some View {
+        environment(\.throwableButtonStyle, AnyThrowableButtonStyle(style))
     }
 }
 
-public protocol AsyncButtonStyle: Sendable {
-    associatedtype Label: View
-    associatedtype Button: View
-    typealias LabelConfiguration = AsyncButtonStyleLabelConfiguration
-    typealias ButtonConfiguration = AsyncButtonStyleButtonConfiguration
+public protocol ThrowableButtonStyle: Sendable {
+    associatedtype ButtonLabel: View
+    associatedtype ButtonView: View
+    typealias LabelConfiguration = ThrowableButtonStyleLabelConfiguration
+    typealias ButtonConfiguration = ThrowableButtonStyleButtonConfiguration
 
-    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> Label
-    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> Button
+    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> ButtonLabel
+    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> ButtonView
 }
-extension AsyncButtonStyle {
+extension ThrowableButtonStyle {
     public func makeLabel(configuration: LabelConfiguration) -> some View {
         configuration.label
     }
@@ -53,46 +53,50 @@ extension AsyncButtonStyle {
     }
 }
 
-public struct AsyncButtonStyleLabelConfiguration {
+public struct ThrowableButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
-    public let isLoading: Bool
     public let label: Label
-    public let cancel: () -> Void
+    /// Is incremented at each new error
+    public let errorCount: Int
 }
-
-public struct AsyncButtonStyleButtonConfiguration {
+public struct ThrowableButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
-    public let isLoading: Bool
     public let button: Button
-    public let cancel: () -> Void
+    /// Is incremented at each new error
+    public let errorCount: Int
 }
-
 // MARK: SwiftUI Environment
 
-struct AsyncButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.overlay)
+extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
+    public static var auto: some ThrowableButtonStyle {
+        ShakeThrowableButtonStyle()
+    }
+}
+
+struct ThrowableButtonStyleKey: EnvironmentKey {
+    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.auto)
 }
 
 extension EnvironmentValues {
-    var asyncButtonStyle: AnyAsyncButtonStyle {
+    var throwableButtonStyle: AnyThrowableButtonStyle {
         get {
-            return self[AsyncButtonStyleKey.self]
+            return self[ThrowableButtonStyleKey.self]
         }
         set {
-            self[AsyncButtonStyleKey.self] = newValue
+            self[ThrowableButtonStyleKey.self] = newValue
         }
     }
 }
 
 // MARK: - Type erasure
 
-struct AnyAsyncButtonStyle: AsyncButtonStyle, Sendable {
-    private let _makeLabel: @Sendable (AsyncButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: @Sendable (AsyncButtonStyle.ButtonConfiguration) -> AnyView
+struct AnyThrowableButtonStyle: ThrowableButtonStyle {
+    private let _makeLabel: @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
+    private let _makeButton: @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
 
-    init<S: AsyncButtonStyle>(_ style: S) {
+    init<S: ThrowableButtonStyle>(_ style: S) {
         self._makeLabel = style.makeLabelTypeErased
         self._makeButton = style.makeButtonTypeErased
     }
@@ -106,7 +110,7 @@ struct AnyAsyncButtonStyle: AsyncButtonStyle, Sendable {
     }
 }
 
-extension AsyncButtonStyle {
+extension ThrowableButtonStyle {
     @Sendable
     func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
         AnyView(self.makeLabel(configuration: configuration))

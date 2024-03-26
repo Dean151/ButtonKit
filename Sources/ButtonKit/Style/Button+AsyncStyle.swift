@@ -1,5 +1,5 @@
 //
-//  Button+ThrowableStyle.swift
+//  Button+AsyncStyle.swift
 //  ButtonKit
 //
 //  MIT License
@@ -30,21 +30,21 @@ import SwiftUI
 // MARK: Public protocol
 
 extension View {
-    public func throwableButtonStyle<S: ThrowableButtonStyle>(_ style: S) -> some View {
-        environment(\.throwableButtonStyle, AnyThrowableButtonStyle(style))
+    public func asyncButtonStyle<S: AsyncButtonStyle>(_ style: S) -> some View {
+        environment(\.asyncButtonStyle, AnyAsyncButtonStyle(style))
     }
 }
 
-public protocol ThrowableButtonStyle: Sendable {
-    associatedtype Label: View
-    associatedtype Button: View
-    typealias LabelConfiguration = ThrowableButtonStyleLabelConfiguration
-    typealias ButtonConfiguration = ThrowableButtonStyleButtonConfiguration
+public protocol AsyncButtonStyle: Sendable {
+    associatedtype ButtonLabel: View
+    associatedtype ButtonView: View
+    typealias LabelConfiguration = AsyncButtonStyleLabelConfiguration
+    typealias ButtonConfiguration = AsyncButtonStyleButtonConfiguration
 
-    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> Label
-    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> Button
+    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> ButtonLabel
+    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> ButtonView
 }
-extension ThrowableButtonStyle {
+extension AsyncButtonStyle {
     public func makeLabel(configuration: LabelConfiguration) -> some View {
         configuration.label
     }
@@ -53,42 +53,60 @@ extension ThrowableButtonStyle {
     }
 }
 
-public struct ThrowableButtonStyleLabelConfiguration {
+public struct AsyncButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
     public let label: Label
-    public let errorCount: Int
+    /// Returns true if the button is in a loading state, and false if the button is idle
+    public let isLoading: Bool
+    /// Returns the fraction completed when the task is determinate. nil when the task is indeterminate
+    public let fractionCompleted: Double?
+    /// A callable closure to cancel the current task if any
+    public let cancel: () -> Void
 }
-public struct ThrowableButtonStyleButtonConfiguration {
+
+public struct AsyncButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
     public let button: Button
-    public let errorCount: Int
+    /// Returns true if the button is in a loading state, and false if the button is idle
+    public let isLoading: Bool
+    /// Returns the fraction completed when the task is determinate. nil when the task is indeterminate
+    public let fractionCompleted: Double?
+    /// A callable closure to cancel the current task if any
+    public let cancel: () -> Void
 }
+
 // MARK: SwiftUI Environment
 
-struct ThrowableButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.shake)
+extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
+    public static var auto: some AsyncButtonStyle {
+        OverlayAsyncButtonStyle(style: .bar)
+    }
+}
+
+struct AsyncButtonStyleKey: EnvironmentKey {
+    static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.auto)
 }
 
 extension EnvironmentValues {
-    var throwableButtonStyle: AnyThrowableButtonStyle {
+    var asyncButtonStyle: AnyAsyncButtonStyle {
         get {
-            return self[ThrowableButtonStyleKey.self]
+            return self[AsyncButtonStyleKey.self]
         }
         set {
-            self[ThrowableButtonStyleKey.self] = newValue
+            self[AsyncButtonStyleKey.self] = newValue
         }
     }
 }
 
 // MARK: - Type erasure
 
-struct AnyThrowableButtonStyle: ThrowableButtonStyle {
-    private let _makeLabel: @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
+struct AnyAsyncButtonStyle: AsyncButtonStyle, Sendable {
+    private let _makeLabel: @Sendable (AsyncButtonStyle.LabelConfiguration) -> AnyView
+    private let _makeButton: @Sendable (AsyncButtonStyle.ButtonConfiguration) -> AnyView
 
-    init<S: ThrowableButtonStyle>(_ style: S) {
+    init<S: AsyncButtonStyle>(_ style: S) {
         self._makeLabel = style.makeLabelTypeErased
         self._makeButton = style.makeButtonTypeErased
     }
@@ -102,7 +120,7 @@ struct AnyThrowableButtonStyle: ThrowableButtonStyle {
     }
 }
 
-extension ThrowableButtonStyle {
+extension AsyncButtonStyle {
     @Sendable
     func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
         AnyView(self.makeLabel(configuration: configuration))

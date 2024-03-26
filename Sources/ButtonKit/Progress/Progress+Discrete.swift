@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+None.swift
+//  Progress+Discrete.swift
 //  ButtonKit
 //
 //  MIT License
@@ -25,24 +25,34 @@
 //  SOFTWARE.
 //
 
-import SwiftUI
+import Combine
 
-public struct NoStyleThrowableButtonStyle: ThrowableButtonStyle {
-    public init() {}
-}
+/// Represents a discrete and linear progress
+@MainActor
+public final class DiscreteProgress: TaskProgress {
+    public let totalUnitCount: Int
+    @Published public var completedUnitCount = 0 {
+        willSet {
+            assert(newValue >= 0 && newValue <= totalUnitCount, "Discrete progression requires completedUnitCount to be in 0...\(totalUnitCount)")
+        }
+    }
 
-extension ThrowableButtonStyle where Self == NoStyleThrowableButtonStyle {
-    public static var none: some ThrowableButtonStyle {
-        NoStyleThrowableButtonStyle()
+    public func reset() {
+        completedUnitCount = 0
+    }
+
+    public var fractionCompleted: Double? {
+        Double(completedUnitCount) / Double(totalUnitCount)
+    }
+
+    nonisolated init(totalUnitCount: Int) {
+        self.totalUnitCount = totalUnitCount
     }
 }
 
-#Preview {
-    ThrowableButton {
-        throw NSError() as Error
-    } label: {
-        Text("None")
+extension TaskProgress where Self == DiscreteProgress {
+    public static func discrete(totalUnitCount: Int) -> DiscreteProgress {
+        assert(totalUnitCount > 0, "Discrete progression requires totalUnitCount to be positive")
+        return DiscreteProgress(totalUnitCount: totalUnitCount)
     }
-    .buttonStyle(.borderedProminent)
-    .throwableButtonStyle(.none)
 }
