@@ -139,6 +139,34 @@ extension AsyncButton where S == Text {
     }
 }
 
+extension AsyncButton where S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, systemImage: systemImage)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(title, systemImage: systemImage)
+    }
+}
+
 extension AsyncButton where P == IndeterminateProgress {
     public init(
         role: ButtonRole? = nil,
@@ -173,6 +201,32 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Text(title)
+    }
+}
+
+extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, systemImage: systemImage)
+    }
+
+    public init(
+        _ title: some StringProtocol,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(title, systemImage: systemImage)
     }
 }
 
