@@ -18,7 +18,7 @@ Install using Swift Package Manager
 
 ```
 dependencies: [
-    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.1.0"),
+    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.3.0"),
 ],
 targets: [
     .target(name: "MyTarget", dependencies: [
@@ -29,7 +29,6 @@ targets: [
 
 And import it:
 ```swift
-import SwiftUI
 import ButtonKit
 ```
 
@@ -234,16 +233,16 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
 
 <table>
     <tr>
-        <td><img src="/Preview/bar.gif" width="250"></td>
-        <td><img src="/Preview/percent.gif" width="250"></td>
+        <td><img src="/Preview/determinant-bar.gif" width="250"></td>
+        <td><img src="/Preview/determinant-percent.gif" width="250"></td>
     </tr>
     <tr>
         <td>.asyncButtonStyle(.overlay)</td>
         <td>.asyncButtonStyle(.overlay(style: .percent))</td>
     </tr>
     <tr>
-        <td><img src="/Preview/progress-leading.gif" width="250"></td>
-        <td><img src="/Preview/progress-trailing.gif" width="250"></td>
+        <td><img src="/Preview/determinant-leading.gif" width="250"></td>
+        <td><img src="/Preview/determinant-trailing.gif" width="250"></td>
     </tr>
     <tr>
         <td>.asyncButtonStyle(.leading)</td>
@@ -251,8 +250,14 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
     </tr>
 </table>
 
-You can also create your own progression logic by implementing the `Progress` protocol. 
+You can also create your own progression logic by implementing the `TaskProgress` protocol. 
 This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
+
+Available TaskProgress implementation are:
+- Indeterminate, default non-determinant progress with `.indeterminate`
+- Discrete linear (completed / total) with `.discrete(totalUnitsCount: Int)`
+- Estimated progress that fill the bar in the provided time interval, stopping à 85% to simulate a determinant loading with `.estimated(for: Duration)`
+- (NS)Progress bridge with `.progress`
 
 ## Contribute
 
