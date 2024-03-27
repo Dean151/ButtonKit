@@ -33,7 +33,7 @@ struct DiscreteProgressDemo: View {
         VStack(spacing: 24) {
             AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
                 for _ in 1...100 {
-                    try await Task.sleep(for: .seconds(0.02))
+                    try await Task.sleep(nanoseconds: 20_000_000)
                     progress.completedUnitCount += 1
                 }
             } label: {
@@ -43,7 +43,7 @@ struct DiscreteProgressDemo: View {
 
             AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
                 for _ in 1...100 {
-                    try await Task.sleep(for: .seconds(0.02))
+                    try await Task.sleep(nanoseconds: 20_000_000)
                     progress.completedUnitCount += 1
                 }
             } label: {
@@ -53,7 +53,7 @@ struct DiscreteProgressDemo: View {
 
             AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
                 for _ in 1...100 {
-                    try await Task.sleep(for: .seconds(0.02))
+                    try await Task.sleep(nanoseconds: 20_000_000)
                     progress.completedUnitCount += 1
                 }
             } label: {
@@ -63,7 +63,7 @@ struct DiscreteProgressDemo: View {
 
             AsyncButton(progress: .discrete(totalUnitCount: 100)) { progress in
                 for _ in 1...100 {
-                    try await Task.sleep(for: .seconds(0.02))
+                    try await Task.sleep(nanoseconds: 20_000_000)
                     progress.completedUnitCount += 1
                 }
             } label: {

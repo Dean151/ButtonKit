@@ -31,29 +31,29 @@ import SwiftUI
 struct EstimatedProgressDemo: View {
     var body: some View {
         VStack(spacing: 24) {
-            AsyncButton(progress: .estimated(for: .seconds(1))) { _ in
-                try await Task.sleep(for: .seconds(2))
+            AsyncButton(progress: .estimated(nanoseconds: 1_000_000_000)) { _ in
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Overlay style")
             }
             .asyncButtonStyle(.overlay)
 
-            AsyncButton(progress: .estimated(for: .seconds(1))) { _ in
-                try await Task.sleep(for: .seconds(2))
+            AsyncButton(progress: .estimated(nanoseconds: 1_000_000_000)) { _ in
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Percent overlay style")
             }
             .asyncButtonStyle(.overlay(style: .percent))
 
-            AsyncButton(progress: .estimated(for: .seconds(1))) { _ in
-                try await Task.sleep(for: .seconds(2))
+            AsyncButton(progress: .estimated(nanoseconds: 1_000_000_000)) { _ in
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Leading style")
             }
             .asyncButtonStyle(.leading)
 
-            AsyncButton(progress: .estimated(for: .seconds(1))) { _ in
-                try await Task.sleep(for: .seconds(2))
+            AsyncButton(progress: .estimated(nanoseconds: 1_000_000_000)) { _ in
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Trailing style")
             }

@@ -29,7 +29,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 Section {
                     NavigationLink {
@@ -63,14 +63,16 @@ struct ContentView: View {
                     Text("Determinate progress")
                 }
 
-                Section {
-                    NavigationLink {
-                        EmptyView()
-                    } label: {
-                        Text("App Store Download")
+                if #available(iOS 17, macOS 14, *) {
+                    Section {
+                        NavigationLink {
+                            AppStoreButtonDemo()
+                        } label: {
+                            Text("App Store Download")
+                        }
+                    } header: {
+                        Text("Customization")
                     }
-                } header: {
-                    Text("Customization")
                 }
             }
             .navigationTitle("ButtonKit")

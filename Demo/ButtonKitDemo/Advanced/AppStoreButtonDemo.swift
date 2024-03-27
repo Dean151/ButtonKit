@@ -28,6 +28,7 @@
 import ButtonKit
 import SwiftUI
 
+@available(iOS 17, macOS 14, *)
 struct AppStoreButtonDemo: View {
     @State private var downloaded = false
 
@@ -59,6 +60,7 @@ struct AppStoreButtonDemo: View {
     }
 }
 
+@available(iOS 17, macOS 14, *)
 #Preview {
     AppStoreButtonDemo()
 }
@@ -93,6 +95,7 @@ extension TaskProgress where Self == DownloadProgress {
 
 // MARK: - Custom Style
 
+@available(iOS 17, macOS 14, *)
 struct AppStoreButtonStyle: AsyncButtonStyle {
     @Namespace private var namespace
 
@@ -175,6 +178,7 @@ struct AppStoreLoadingView: View {
     }
 }
 
+@available(iOS 17, macOS 14, *)
 extension AsyncButtonStyle where Self == AppStoreButtonStyle {
     static var appStore: AppStoreButtonStyle {
         AppStoreButtonStyle()

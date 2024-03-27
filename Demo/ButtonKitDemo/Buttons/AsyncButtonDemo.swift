@@ -33,35 +33,35 @@ struct AsyncButtonDemo: View {
         VStack(spacing: 24) {
             AsyncButton {
                 // Here you have a throwable & async closure!
-                try await Task.sleep(for: .seconds(2))
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Overlay style")
             }
             .asyncButtonStyle(.overlay)
 
             AsyncButton {
-                try await Task.sleep(for: .seconds(2))
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Leading style")
             }
             .asyncButtonStyle(.leading)
 
             AsyncButton {
-                try await Task.sleep(for: .seconds(2))
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Trailing style")
             }
             .asyncButtonStyle(.trailing)
 
             AsyncButton {
-                try await Task.sleep(for: .seconds(2))
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("Pulse style")
             }
             .asyncButtonStyle(.pulse)
 
             AsyncButton {
-                try await Task.sleep(for: .seconds(2))
+                try await Task.sleep(nanoseconds: 2_000_000_000)
             } label: {
                 Text("No style")
             }
