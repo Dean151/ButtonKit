@@ -30,13 +30,13 @@ import SwiftUI
 /// Represents a progress where we estimate the time required to complete it
 @MainActor
 public class EstimatedProgress: TaskProgress {
-    let sleeper: any Sleeper
+    let sleeper: Sleeper
     let stop = 0.85
     @Published public private(set) var fractionCompleted: Double? = 0
     private var task: Task<Void, Never>?
 
-    nonisolated init(nanoseconds: UInt64) {
-        self.sleeper = NanosecondsSleeper(nanoseconds: nanoseconds)
+    nonisolated init(nanoseconds duration: UInt64) {
+        self.sleeper = NanosecondsSleeper(nanoseconds: duration)
     }
 
     @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, visionOS 1.0, *)
@@ -65,13 +65,21 @@ public class EstimatedProgress: TaskProgress {
 }
 
 extension TaskProgress where Self == EstimatedProgress {
-    public static func estimated(nanoseconds: UInt64) -> EstimatedProgress {
-        EstimatedProgress(nanoseconds: nanoseconds)
+    public static func estimated(nanoseconds duration: UInt64) -> EstimatedProgress {
+        EstimatedProgress(nanoseconds: duration)
     }
 
     @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, visionOS 1.0, *)
     public static func estimated(for duration: Duration) -> EstimatedProgress {
         EstimatedProgress(estimation: duration)
+    }
+
+    /// This one is only to make SwiftUI preview happy
+    /// Turns out SiwftUI preview does not like "literal UInt" to be present
+    @_disfavoredOverload
+    public static func estimated(nanoseconds duration: Int) -> EstimatedProgress {
+        assert(duration >= 0, "duration must be positive!")
+        return .estimated(nanoseconds: UInt64(duration))
     }
 }
 
@@ -80,10 +88,14 @@ protocol Sleeper: Sendable {
 }
 
 struct NanosecondsSleeper: Sleeper {
-    let nanoseconds: UInt64
+    let duration: UInt64
+
+    init(nanoseconds duration: UInt64) {
+        self.duration = duration
+    }
 
     func sleep(fraction: Double) async throws {
-        try await Task.sleep(nanoseconds: UInt64(Double(nanoseconds) * fraction))
+        try await Task.sleep(nanoseconds: UInt64(Double(duration) * fraction))
     }
 }
 
