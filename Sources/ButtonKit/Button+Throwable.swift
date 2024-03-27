@@ -73,6 +73,7 @@ extension ThrowableButton where S == Text {
         self.label = Text(titleKey)
     }
 
+    @_disfavoredOverload
     public init(_ title: some StringProtocol, role: ButtonRole? = nil, action: @escaping () throws -> Void) {
         self.role = role
         self.action = action

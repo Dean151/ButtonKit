@@ -126,6 +126,7 @@ extension AsyncButton where S == Text {
         self.label = Text(titleKey)
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
@@ -153,6 +154,7 @@ extension AsyncButton where S == Label<Text, Image> {
         self.label = Label(titleKey, systemImage: systemImage)
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         systemImage: String,
@@ -192,6 +194,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         self.label = Text(titleKey)
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
@@ -217,6 +220,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.label = Label(titleKey, systemImage: systemImage)
     }
 
+    @_disfavoredOverload
     public init(
         _ title: some StringProtocol,
         systemImage: String,
