@@ -33,7 +33,7 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
         case percent
     }
 
-    private var style: ProgressStyle
+    private let style: ProgressStyle
     public init(style: ProgressStyle = .bar) {
         self.style = style
     }
