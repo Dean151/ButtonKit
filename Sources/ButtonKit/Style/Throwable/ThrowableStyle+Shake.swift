@@ -44,11 +44,11 @@ extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
 }
 
 struct Shake: GeometryEffect {
-    var amount: CGFloat = 10
-    var shakesPerUnit = 4
-    var animatableData: CGFloat
+    let amount: CGFloat = 10
+    let shakesPerUnit = 4
+    nonisolated(unsafe) var animatableData: CGFloat
 
-    func effectValue(size: CGSize) -> ProjectionTransform {
+    nonisolated func effectValue(size: CGSize) -> ProjectionTransform {
         ProjectionTransform(CGAffineTransform(translationX: amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)), y: 0))
     }
 }

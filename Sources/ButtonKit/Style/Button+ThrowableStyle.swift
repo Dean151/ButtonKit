@@ -41,8 +41,8 @@ public protocol ThrowableButtonStyle: Sendable {
     typealias LabelConfiguration = ThrowableButtonStyleLabelConfiguration
     typealias ButtonConfiguration = ThrowableButtonStyleButtonConfiguration
 
-    @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> ButtonLabel
-    @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> ButtonView
+    @MainActor @ViewBuilder func makeLabel(configuration: LabelConfiguration) -> ButtonLabel
+    @MainActor @ViewBuilder func makeButton(configuration: ButtonConfiguration) -> ButtonView
 }
 extension ThrowableButtonStyle {
     public func makeLabel(configuration: LabelConfiguration) -> some View {
@@ -93,8 +93,8 @@ extension EnvironmentValues {
 // MARK: - Type erasure
 
 struct AnyThrowableButtonStyle: ThrowableButtonStyle {
-    private let _makeLabel: @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
+    private let _makeLabel: @MainActor @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
+    private let _makeButton: @MainActor @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
 
     init<S: ThrowableButtonStyle>(_ style: S) {
         self._makeLabel = style.makeLabelTypeErased
@@ -111,11 +111,11 @@ struct AnyThrowableButtonStyle: ThrowableButtonStyle {
 }
 
 extension ThrowableButtonStyle {
-    @Sendable
+    @MainActor
     func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
         AnyView(self.makeLabel(configuration: configuration))
     }
-    @Sendable
+    @MainActor
     func makeButtonTypeErased(configuration: ButtonConfiguration) -> AnyView {
         AnyView(self.makeButton(configuration: configuration))
     }

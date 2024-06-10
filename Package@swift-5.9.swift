@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -10,7 +10,10 @@ let package = Package(
         .library(name: "ButtonKit", targets: ["ButtonKit"]),
     ],
     targets: [
-        .target(name: "ButtonKit"),
-    ],
-    swiftLanguageVersions: [.v6]
+        .target(name: "ButtonKit", swiftSettings: [.strictConcurrency]),
+    ]
 )
+
+extension SwiftSetting {
+    static let strictConcurrency = enableExperimentalFeature("StrictConcurrency")
+}
