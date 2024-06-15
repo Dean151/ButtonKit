@@ -65,6 +65,7 @@ struct Shake: GeometryEffect {
 }
 #endif
 
+#if swift(>=5.9)
 #Preview {
     ThrowableButton {
         throw NSError() as Error
@@ -74,3 +75,4 @@ struct Shake: GeometryEffect {
     .buttonStyle(.borderedProminent)
     .throwableButtonStyle(.shake)
 }
+#endif

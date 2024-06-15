@@ -71,6 +71,7 @@ extension TaskProgress where Self == NSProgressBridge {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     AsyncButton(progress: .progress) { progress in
         let nsProgress = Progress(totalUnitCount: 100)
@@ -85,3 +86,4 @@ extension TaskProgress where Self == NSProgressBridge {
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.overlay)
 }
+#endif

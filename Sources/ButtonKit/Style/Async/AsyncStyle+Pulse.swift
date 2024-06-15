@@ -44,6 +44,7 @@ extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     AsyncButton {
         try await Task.sleep(nanoseconds: 5_000_000_000)
@@ -53,3 +54,4 @@ extension AsyncButtonStyle where Self == PulseAsyncButtonStyle {
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.pulse)
 }
+#endif

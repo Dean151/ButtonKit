@@ -105,6 +105,7 @@ extension ThrowableButton where S == Label<Text, Image> {
     }
 }
 
+#if swift(>=5.9)
 #Preview("Error") {
     ThrowableButton {
         throw NSError() as Error
@@ -122,3 +123,4 @@ extension ThrowableButton where S == Label<Text, Image> {
     .buttonStyle(.borderedProminent)
     .buttonBorderShape(.roundedRectangle)
 }
+#endif

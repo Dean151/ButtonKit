@@ -37,6 +37,7 @@ extension ThrowableButtonStyle where Self == NoStyleThrowableButtonStyle {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     ThrowableButton {
         throw NSError() as Error
@@ -46,3 +47,4 @@ extension ThrowableButtonStyle where Self == NoStyleThrowableButtonStyle {
     .buttonStyle(.borderedProminent)
     .throwableButtonStyle(.none)
 }
+#endif

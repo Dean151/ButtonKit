@@ -234,6 +234,7 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
     }
 }
 
+#if swift(>=5.9)
 #Preview("Indeterminate") {
     AsyncButton {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
@@ -283,3 +284,4 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
     .buttonStyle(.borderedProminent)
     .buttonBorderShape(.roundedRectangle)
 }
+#endif
