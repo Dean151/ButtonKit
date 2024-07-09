@@ -64,7 +64,6 @@ struct CircularProgressView: View {
     }
 }
 
-#if swift(>=5.9)
 #Preview("Determinate") {
     CircularProgressView(value: 0.42)
         .foregroundStyle(.linearGradient(
@@ -73,4 +72,3 @@ struct CircularProgressView: View {
             endPoint: .bottomTrailing)
         )
 }
-#endif

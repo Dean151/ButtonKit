@@ -58,7 +58,6 @@ struct BarProgressView: View {
     }
 }
 
-#if swift(>=5.9)
 #Preview {
     BarProgressView(value: 0.42)
         .foregroundStyle(.linearGradient(
@@ -67,4 +66,3 @@ struct BarProgressView: View {
             endPoint: .bottomTrailing)
         )
 }
-#endif

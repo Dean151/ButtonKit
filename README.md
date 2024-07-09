@@ -9,7 +9,7 @@ With ButtonKit, you'll have access to:
 
 ## Requirements
 
-- Swift 5.7+ (Xcode 14+)
+- Swift 5.9+ (Xcode 15+)
 - iOS 15+, iPadOS 15+, tvOS 15+, watchOS 8+, macOS 12+, visionOS 1+
 
 ## Installation

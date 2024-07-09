@@ -52,7 +52,6 @@ extension AsyncButtonStyle where Self == LeadingAsyncButtonStyle {
     }
 }
 
-#if swift(>=5.9)
 #Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
@@ -75,4 +74,3 @@ extension AsyncButtonStyle where Self == LeadingAsyncButtonStyle {
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.leading)
 }
-#endif

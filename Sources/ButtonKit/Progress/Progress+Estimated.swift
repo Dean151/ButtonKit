@@ -108,7 +108,6 @@ struct DurationSleeper: Sleeper {
     }
 }
 
-#if swift(>=5.9)
 #Preview("Nanoseconds signature") {
     AsyncButton(progress: .estimated(nanoseconds: 1_000_000_000)) { progress in
         try await Task.sleep(nanoseconds: 2_000_000_000)
@@ -129,4 +128,3 @@ struct DurationSleeper: Sleeper {
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.overlay)
 }
-#endif

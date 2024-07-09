@@ -50,7 +50,6 @@ struct IndeterminateProgressView: View {
     init() {}
 }
 
-#if swift(>=5.9)
 #Preview {
     IndeterminateProgressView()
         .foregroundStyle(.linearGradient(
@@ -59,4 +58,3 @@ struct IndeterminateProgressView: View {
             endPoint: .bottomTrailing)
         )
 }
-#endif

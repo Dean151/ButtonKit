@@ -69,7 +69,6 @@ extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
     }
 }
 
-#if swift(>=5.9)
 #Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
@@ -105,4 +104,3 @@ extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
     .buttonStyle(.borderedProminent)
     .asyncButtonStyle(.overlay(style: .percent))
 }
-#endif
