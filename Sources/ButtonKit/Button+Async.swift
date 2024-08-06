@@ -36,6 +36,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private var disabledWhenLoading
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
+    @Environment(\.triggerButton)
+    private var triggerButton
 
     private let role: ButtonRole?
     private let id: AnyHashable?
@@ -59,24 +61,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             cancel: cancel
         )
         label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
-        let button = Button(role: role) {
-            guard task == nil else {
-                return
-            }
-            task = Task {
-                // Initialize progress
-                progress.reset()
-                await progress.started()
-                do {
-                    try await action(progress)
-                } catch {
-                    errorCount += 1
-                }
-                // Reset progress
-                await progress.ended()
-                task = nil
-            }
-        } label: {
+        let button = Button(role: role, action: perform) {
             label
         }
         let throwableConfiguration = ThrowableButtonStyleButtonConfiguration(
@@ -94,6 +79,18 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
             .disabled(disabledWhenLoading && task != nil)
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
+            .onAppear {
+                guard let id else {
+                    return
+                }
+                triggerButton.register(id: id, action: perform)
+            }
+            .onDisappear {
+                guard let id else {
+                    return
+                }
+                triggerButton.unregister(id: id)
+            }
     }
 
     public init(
@@ -108,6 +105,25 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = label()
+    }
+
+    private func perform() {
+        guard task == nil else {
+            return
+        }
+        task = Task {
+            // Initialize progress
+            progress.reset()
+            await progress.started()
+            do {
+                try await action(progress)
+            } catch {
+                errorCount += 1
+            }
+            // Reset progress
+            await progress.ended()
+            task = nil
+        }
     }
 
     private func cancel() {

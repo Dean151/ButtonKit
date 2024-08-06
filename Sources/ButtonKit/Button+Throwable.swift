@@ -30,6 +30,8 @@ import SwiftUI
 public struct ThrowableButton<S: View>: View {
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
+    @Environment(\.triggerButton)
+    private var triggerButton
 
     private let role: ButtonRole?
     private let id: AnyHashable?
@@ -43,13 +45,7 @@ public struct ThrowableButton<S: View>: View {
             label: AnyView(label),
             errorCount: errorCount
         )
-        let button = Button(role: role) {
-            do {
-                try action()
-            } catch {
-                errorCount += 1
-            }
-        } label: {
+        let button = Button(role: role, action: perform) {
             throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)
         }
         .animation(.default, value: errorCount)
@@ -58,6 +54,18 @@ public struct ThrowableButton<S: View>: View {
             errorCount: errorCount
         )
         return throwableButtonStyle.makeButton(configuration: throwableConfiguration)
+            .onAppear {
+                guard let id else {
+                    return
+                }
+                triggerButton.register(id: id, action: perform)
+            }
+            .onDisappear {
+                guard let id else {
+                    return
+                }
+                triggerButton.unregister(id: id)
+            }
     }
 
     public init(
@@ -70,6 +78,14 @@ public struct ThrowableButton<S: View>: View {
         self.id = id
         self.action = action
         self.label = label()
+    }
+
+    private func perform() {
+        do {
+            try action()
+        } catch {
+            errorCount += 1
+        }
     }
 }
 
