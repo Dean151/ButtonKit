@@ -32,6 +32,7 @@ public struct ThrowableButton<S: View>: View {
     private var throwableButtonStyle
 
     private let role: ButtonRole?
+    private let id: AnyHashable?
     private let action: () throws -> Void
     private let label: S
 
@@ -59,23 +60,41 @@ public struct ThrowableButton<S: View>: View {
         return throwableButtonStyle.makeButton(configuration: throwableConfiguration)
     }
 
-    public init(role: ButtonRole? = nil, action: @escaping () throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = label()
     }
 }
 
 extension ThrowableButton where S == Text {
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () throws -> Void) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Text(titleKey)
     }
 
     @_disfavoredOverload
-    public init(_ title: some StringProtocol, role: ButtonRole? = nil, action: @escaping () throws -> Void) {
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Text(title)
     }
@@ -86,9 +105,11 @@ extension ThrowableButton where S == Label<Text, Image> {
         _ titleKey: LocalizedStringKey,
         systemImage: String,
         role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
         action: @escaping () throws -> Void
     ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Label(titleKey, systemImage: systemImage)
     }
@@ -97,9 +118,11 @@ extension ThrowableButton where S == Label<Text, Image> {
         _ title: some StringProtocol,
         systemImage: String,
         role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
         action: @escaping () throws -> Void
     ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Label(title, systemImage: systemImage)
     }
