@@ -12,6 +12,7 @@
 		E937B5AF2BAF8B8100B1B880 /* AsyncButtonDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E937B5AE2BAF8B8100B1B880 /* AsyncButtonDemo.swift */; };
 		E937B5B12BAF8C4500B1B880 /* EstimatedProgressDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E937B5B02BAF8C4500B1B880 /* EstimatedProgressDemo.swift */; };
 		E937B5B42BAF8D7F00B1B880 /* AppStoreButtonDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E937B5B32BAF8D7F00B1B880 /* AppStoreButtonDemo.swift */; };
+		E9447BCD2C62BA6D0056DC4D /* TriggerDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9447BCB2C62BA6D0056DC4D /* TriggerDemo.swift */; };
 		E9D33A662BAF2D8600C500FD /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D33A652BAF2D8600C500FD /* DemoApp.swift */; };
 		E9D33A682BAF2D8600C500FD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D33A672BAF2D8600C500FD /* ContentView.swift */; };
 		E9D33A6A2BAF2D8700C500FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9D33A692BAF2D8700C500FD /* Assets.xcassets */; };
@@ -24,6 +25,7 @@
 		E937B5AE2BAF8B8100B1B880 /* AsyncButtonDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncButtonDemo.swift; sourceTree = "<group>"; };
 		E937B5B02BAF8C4500B1B880 /* EstimatedProgressDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimatedProgressDemo.swift; sourceTree = "<group>"; };
 		E937B5B32BAF8D7F00B1B880 /* AppStoreButtonDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreButtonDemo.swift; sourceTree = "<group>"; };
+		E9447BCB2C62BA6D0056DC4D /* TriggerDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerDemo.swift; sourceTree = "<group>"; };
 		E9D33A622BAF2D8600C500FD /* ButtonKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ButtonKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9D33A652BAF2D8600C500FD /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		E9D33A672BAF2D8600C500FD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,6 +55,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E9447BCC2C62BA6D0056DC4D /* Trigger */ = {
+			isa = PBXGroup;
+			children = (
+				E9447BCB2C62BA6D0056DC4D /* TriggerDemo.swift */,
+			);
+			path = Trigger;
+			sourceTree = "<group>";
+		};
 		E9D33A592BAF2D8600C500FD = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +88,7 @@
 				E9D33A672BAF2D8600C500FD /* ContentView.swift */,
 				E9D33A752BAF2FFE00C500FD /* Buttons */,
 				E9D33A762BAF300E00C500FD /* Progress */,
+				E9447BCC2C62BA6D0056DC4D /* Trigger */,
 				E9D33A772BAF301700C500FD /* Advanced */,
 				E9D33A692BAF2D8700C500FD /* Assets.xcassets */,
 				E9D33A6B2BAF2D8700C500FD /* ButtonKitDemo.entitlements */,
@@ -198,6 +209,7 @@
 				E9D33A792BAF303F00C500FD /* ThrowableButtonDemo.swift in Sources */,
 				E937B5B12BAF8C4500B1B880 /* EstimatedProgressDemo.swift in Sources */,
 				E9D33A682BAF2D8600C500FD /* ContentView.swift in Sources */,
+				E9447BCD2C62BA6D0056DC4D /* TriggerDemo.swift in Sources */,
 				E9D33A662BAF2D8600C500FD /* DemoApp.swift in Sources */,
 				E937B5AF2BAF8B8100B1B880 /* AsyncButtonDemo.swift in Sources */,
 			);

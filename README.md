@@ -198,6 +198,50 @@ You can also build your own customization by implementing `AsyncButtonStyle` pro
 
 Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allow you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
 
+### External triggering
+
+You might need to trigger the behavior behind a button with specific user actions, like when pressing the "Send" key on the virtual keyboard.
+
+Therefore, to get free animated progress and errors behavior on your button, you can't just start the action of the button by yourself. You need the button to start it. 
+
+To do so, you need to set an unique identifier to your button:
+
+```swift
+enum LoginViewButton: Hashable {
+  case login
+}
+
+struct ContentView: View {
+    var body: some View {
+        AsyncButton(id: LoginViewButton.login) {
+            try await login()
+        } label: {
+            Text("Login")
+        }
+    }
+}
+```
+
+And from any view, access the triggerButton environment:
+
+```swift
+struct ContentView: View {
+    @Environment(\.triggerButton)
+    private var triggerButton
+    
+    ...
+    
+    func performLogin() {
+        triggerButton(LoginViewButton.login)
+    }
+}
+```
+
+Note that:
+- The button **Must be on screen** to trigger it using this method.
+- If the triggered button is disabled, calling triggerButton will have no effect
+- If a task has already started on the triggered button, calling triggerButton will have no effect
+
 ### Deterministic progress
 
 AsyncButton supports progress reporting:
