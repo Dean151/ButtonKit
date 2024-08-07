@@ -9,13 +9,8 @@ let package = Package(
     products: [
         .library(name: "ButtonKit", targets: ["ButtonKit"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-issue-reporting", from: "1.2.0")
-    ],
     targets: [
-        .target(name: "ButtonKit", dependencies: [
-            .product(name: "IssueReporting", package: "swift-issue-reporting")
-        ]),
+        .target(name: "ButtonKit"),
     ],
     swiftLanguageVersions: [.v6]
 )

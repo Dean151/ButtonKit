@@ -26,7 +26,12 @@
 //
 
 import SwiftUI
+
+#if canImport(IssueReporting)
 import IssueReporting
+#else
+import OSLog
+#endif
 
 /// Allow to trigger an arbitrary but identified `AsyncButton` or `ThrowableButton`
 public final class TriggerButton: Sendable {
@@ -37,7 +42,11 @@ public final class TriggerButton: Sendable {
     @MainActor
     public func callAsFunction(id: AnyHashable) {
         guard let closure = buttons[id] else {
+            #if canImport(IssueReporting)
             reportIssue("Could not trigger button with id: \(id). It is not currently on screen!")
+            #else
+            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Could not trigger button with id: \(id). It is not currently on screen!")
+            #endif
             return
         }
         closure()
@@ -46,7 +55,11 @@ public final class TriggerButton: Sendable {
     @MainActor
     func register(id: AnyHashable, action: @escaping @MainActor () -> Void) {
         if buttons.keys.contains(id) {
+            #if canImport(IssueReporting)
             reportIssue("Registering a button with an already existing id: \(id). The previous one was overridden.")
+            #else
+            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Registering a button with an already existing id: \(id). The previous one was overridden.")
+            #endif
         }
         buttons.updateValue(action, forKey: id)
     }
