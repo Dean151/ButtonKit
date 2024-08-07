@@ -28,6 +28,8 @@
 import SwiftUI
 
 public struct ThrowableButton<S: View>: View {
+    @Environment(\.isEnabled)
+    private var isEnabled
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
     @Environment(\.triggerButton)
@@ -81,6 +83,9 @@ public struct ThrowableButton<S: View>: View {
     }
 
     private func perform() {
+        guard isEnabled else {
+            return
+        }
         do {
             try action()
         } catch {

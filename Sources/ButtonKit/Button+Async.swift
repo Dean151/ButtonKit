@@ -34,6 +34,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private var allowsHitTestingWhenLoading
     @Environment(\.disabledWhenLoading)
     private var disabledWhenLoading
+    @Environment(\.isEnabled)
+    private var isEnabled
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
     @Environment(\.triggerButton)
@@ -108,7 +110,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     }
 
     private func perform() {
-        guard task == nil else {
+        guard task == nil, isEnabled else {
             return
         }
         task = Task {
