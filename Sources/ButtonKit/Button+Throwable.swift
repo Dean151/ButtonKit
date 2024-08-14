@@ -28,10 +28,15 @@
 import SwiftUI
 
 public struct ThrowableButton<S: View>: View {
+    @Environment(\.isEnabled)
+    private var isEnabled
     @Environment(\.throwableButtonStyle)
     private var throwableButtonStyle
+    @Environment(\.triggerButton)
+    private var triggerButton
 
     private let role: ButtonRole?
+    private let id: AnyHashable?
     private let action: () throws -> Void
     private let label: S
 
@@ -42,13 +47,7 @@ public struct ThrowableButton<S: View>: View {
             label: AnyView(label),
             errorCount: errorCount
         )
-        let button = Button(role: role) {
-            do {
-                try action()
-            } catch {
-                errorCount += 1
-            }
-        } label: {
+        let button = Button(role: role, action: perform) {
             throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)
         }
         .animation(.default, value: errorCount)
@@ -57,25 +56,66 @@ public struct ThrowableButton<S: View>: View {
             errorCount: errorCount
         )
         return throwableButtonStyle.makeButton(configuration: throwableConfiguration)
+            .onAppear {
+                guard let id else {
+                    return
+                }
+                triggerButton.register(id: id, action: perform)
+            }
+            .onDisappear {
+                guard let id else {
+                    return
+                }
+                triggerButton.unregister(id: id)
+            }
     }
 
-    public init(role: ButtonRole? = nil, action: @escaping () throws -> Void, @ViewBuilder label: @escaping () -> S) {
+    public init(
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void,
+        @ViewBuilder label: @escaping () -> S
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = label()
+    }
+
+    private func perform() {
+        guard isEnabled else {
+            return
+        }
+        do {
+            try action()
+        } catch {
+            errorCount += 1
+        }
     }
 }
 
 extension ThrowableButton where S == Text {
-    public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () throws -> Void) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Text(titleKey)
     }
 
     @_disfavoredOverload
-    public init(_ title: some StringProtocol, role: ButtonRole? = nil, action: @escaping () throws -> Void) {
+    public init(
+        _ title: some StringProtocol,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () throws -> Void
+    ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Text(title)
     }
@@ -86,9 +126,11 @@ extension ThrowableButton where S == Label<Text, Image> {
         _ titleKey: LocalizedStringKey,
         systemImage: String,
         role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
         action: @escaping () throws -> Void
     ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Label(titleKey, systemImage: systemImage)
     }
@@ -97,9 +139,11 @@ extension ThrowableButton where S == Label<Text, Image> {
         _ title: some StringProtocol,
         systemImage: String,
         role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
         action: @escaping () throws -> Void
     ) {
         self.role = role
+        self.id = id
         self.action = action
         self.label = Label(title, systemImage: systemImage)
     }

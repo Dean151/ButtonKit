@@ -49,6 +49,16 @@ struct ContentView: View {
 
                 Section {
                     NavigationLink {
+                        TriggerButtonDemo()
+                    } label: {
+                        Text("Programmatic Trigger")
+                    }
+                } header: {
+                    Text("Triggers")
+                }
+
+                Section {
+                    NavigationLink {
                         DiscreteProgressDemo()
                     } label: {
                         Text("Discrete Progress")
