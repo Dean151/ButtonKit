@@ -12,5 +12,5 @@ let package = Package(
     targets: [
         .target(name: "ButtonKit"),
     ],
-    swiftLanguageVersions: [.v6]
+    swiftLanguageModes: [.v6]
 )
