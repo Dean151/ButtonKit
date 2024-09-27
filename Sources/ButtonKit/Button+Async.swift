@@ -48,6 +48,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
 
     @State private var task: Task<Void, Never>?
     @ObservedObject private var progress: P
+    private let isLoading: Binding<Bool>?
     @State private var errorCount = 0
 
     public var body: some View {
@@ -82,6 +83,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .disabled(disabledWhenLoading && task != nil)
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
             .onAppear {
+                isLoading?.wrappedValue = false
                 guard let id else {
                     return
                 }
@@ -99,12 +101,14 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
+        isLoading: Binding<Bool>? = nil,
         action: @MainActor @escaping (P) async throws -> Void,
         @ViewBuilder label: @escaping () -> S
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
+        self.isLoading = isLoading
         self.action = action
         self.label = label()
     }
@@ -114,6 +118,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             return
         }
         task = Task {
+            isLoading?.wrappedValue = true
+            defer { isLoading?.wrappedValue = false }
             // Initialize progress
             progress.reset()
             await progress.started()
@@ -131,6 +137,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private func cancel() {
         task?.cancel()
         task = nil
+        isLoading?.wrappedValue = false
     }
 }
 
@@ -140,11 +147,13 @@ extension AsyncButton where S == Text {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
+        isLoading: Binding<Bool>? = nil,
         action: @MainActor @escaping (P) async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
+        self.isLoading = isLoading
         self.action = action
         self.label = Text(titleKey)
     }
@@ -155,11 +164,13 @@ extension AsyncButton where S == Text {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
+        isLoading: Binding<Bool>? = nil,
         action: @MainActor @escaping (P) async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
+        self.isLoading = isLoading
         self.action = action
         self.label = Text(title)
     }
@@ -172,11 +183,13 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
+        isLoading: Binding<Bool>? = nil,
         action: @MainActor @escaping (P) async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
+        self.isLoading = isLoading
         self.action = action
         self.label = Label(titleKey, systemImage: systemImage)
     }
@@ -188,11 +201,13 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
+        isLoading: Binding<Bool>? = nil,
         action: @MainActor @escaping (P) async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
+        self.isLoading = isLoading
         self.action = action
         self.label = Label(title, systemImage: systemImage)
     }
@@ -202,12 +217,14 @@ extension AsyncButton where P == IndeterminateProgress {
     public init(
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
+        isLoading: Binding<Bool>? = nil,
         action: @escaping () async throws -> Void,
         @ViewBuilder label: @escaping () -> S
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
+        self.isLoading = isLoading
         self.action = { _ in try await action()}
         self.label = label()
     }
@@ -218,11 +235,13 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
+        isLoading: Binding<Bool>? = nil,
         action: @escaping () async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
+        self.isLoading = isLoading
         self.action = { _ in try await action()}
         self.label = Text(titleKey)
     }
@@ -232,11 +251,13 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
+        isLoading: Binding<Bool>? = nil,
         action: @escaping () async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
+        self.isLoading = isLoading
         self.action = { _ in try await action()}
         self.label = Text(title)
     }
@@ -248,11 +269,13 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
+        isLoading: Binding<Bool>? = nil,
         action: @escaping () async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
+        self.isLoading = isLoading
         self.action = { _ in try await action()}
         self.label = Label(titleKey, systemImage: systemImage)
     }
@@ -263,11 +286,13 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
+        isLoading: Binding<Bool>? = nil,
         action: @escaping () async throws -> Void
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
+        self.isLoading = isLoading
         self.action = { _ in try await action()}
         self.label = Label(title, systemImage: systemImage)
     }
@@ -321,4 +346,19 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
     }
     .buttonStyle(.borderedProminent)
     .buttonBorderShape(.roundedRectangle)
+}
+
+@available(iOS 17.0, *)
+#Preview("isLoading") {
+    @Previewable @State var isLoading = false
+    VStack {
+        Text(isLoading ? "Loading..." : "Not Loading")
+        AsyncButton(isLoading: $isLoading) {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        } label: {
+            Text("Process")
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.roundedRectangle)
+    }
 }
