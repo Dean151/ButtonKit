@@ -171,6 +171,70 @@ extension AsyncButton where S == Text {
 extension AsyncButton where S == Label<Text, Image> {
     public init(
         _ titleKey: LocalizedStringKey,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, image: name)
+    }
+
+    @_disfavoredOverload
+    public init(
+        _ title: some StringProtocol,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(title, image: name)
+    }
+
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    public init(
+        _ titleKey: LocalizedStringKey,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, image: image)
+    }
+
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    @_disfavoredOverload
+    public init(
+        _ title: some StringProtocol,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(title, image: image)
+    }
+
+    public init(
+        _ titleKey: LocalizedStringKey,
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
@@ -246,6 +310,66 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 }
 
 extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, image: name)
+    }
+
+    @_disfavoredOverload
+    public init(
+        _ title: some StringProtocol,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(title, image: name)
+    }
+
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    public init(
+        _ titleKey: LocalizedStringKey,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, image: image)
+    }
+
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    @_disfavoredOverload
+    public init(
+        _ title: some StringProtocol,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(title, image: image)
+    }
+
     public init(
         _ titleKey: LocalizedStringKey,
         systemImage: String,
