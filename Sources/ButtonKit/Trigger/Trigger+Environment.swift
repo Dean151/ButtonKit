@@ -28,7 +28,7 @@
 import OSLog
 import SwiftUI
 
-/// Allow to trigger an arbitrary but identified `AsyncButton` or `ThrowableButton`
+/// Allow to trigger an arbitrary but identified `AsyncButton`
 public final class TriggerButton: Sendable {
     @MainActor private var buttons: [AnyHashable: @MainActor () -> Void] = [:]
 

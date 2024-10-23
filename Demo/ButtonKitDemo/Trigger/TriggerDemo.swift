@@ -83,7 +83,7 @@ struct TriggerButtonDemo: View {
             }
 
             Section {
-                ThrowableButton(role: .destructive, id: FormButton.cancel) {
+                AsyncButton(role: .destructive, id: FormButton.cancel) {
                     focus = nil
                     username = ""
                     password = ""

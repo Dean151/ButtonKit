@@ -27,6 +27,9 @@
 
 import SwiftUI
 
+@available(*, deprecated, renamed: "AsyncButton")
+public typealias ThrowableButton = AsyncButton
+
 public struct AsyncButton<P: TaskProgress, S: View>: View {
     @Environment(\.asyncButtonStyle)
     private var asyncButtonStyle

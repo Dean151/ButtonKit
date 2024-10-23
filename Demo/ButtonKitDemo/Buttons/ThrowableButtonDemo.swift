@@ -33,7 +33,7 @@ struct CustomError: Error {}
 struct ThrowableButtonDemo: View {
     var body: some View {
         VStack(spacing: 24) {
-            ThrowableButton {
+            AsyncButton {
                 // Here you have a throwable closure!
                 throw CustomError()
             } label: {
@@ -41,7 +41,7 @@ struct ThrowableButtonDemo: View {
             }
             .throwableButtonStyle(.shake)
 
-            ThrowableButton {
+            AsyncButton {
                 throw CustomError()
             } label: {
                 Text("No throwable style")

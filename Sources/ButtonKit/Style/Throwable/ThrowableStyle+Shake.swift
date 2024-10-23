@@ -54,7 +54,7 @@ struct Shake: GeometryEffect {
 }
 
 #Preview {
-    ThrowableButton {
+    AsyncButton {
         throw NSError() as Error
     } label: {
         Text("Shake")

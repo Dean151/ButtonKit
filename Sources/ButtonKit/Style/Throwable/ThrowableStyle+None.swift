@@ -38,7 +38,7 @@ extension ThrowableButtonStyle where Self == NoStyleThrowableButtonStyle {
 }
 
 #Preview {
-    ThrowableButton {
+    AsyncButton {
         throw NSError() as Error
     } label: {
         Text("None")

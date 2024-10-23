@@ -3,9 +3,7 @@
 ButtonKit provide two SwiftUI buttons to deal with throwable and asynchronous actions.
 By default, SwiftUI button only accept a closure.
 
-With ButtonKit, you'll have access to:
-- `ThrowableButton`, accepting a `() throws -> Void` closure
-- `AsyncButton`, accepting a `() async throws -> Void` closure
+With ButtonKit, you'll have access to an `AsyncButton` view, accepting a `() async throws -> Void` closure.
 
 ## Requirements
 
@@ -39,7 +37,7 @@ import ButtonKit
 Use it as any SwiftUI button, but throw if you want in the closure:
 
 ```swift
-ThrowableButton {
+AsyncButton {
     try doSomethingThatCanFail()
 } label {
     Text("Do something")
@@ -62,7 +60,7 @@ For now, only this shake behavior is built-in:
 You can disable still it by passing `.none` to throwableButtonStyle:
 
 ```swift
-ThrowableButton {
+AsyncButton {
     try doSomethingThatCanFail()
 } label {
     Text("Do something")
@@ -96,7 +94,7 @@ extension ThrowableButtonStyle where Self == TryAgainThrowableButtonStyle {
 
 Then, use it:
 ```swift
-ThrowableButton {
+AsyncButton {
     try doSomethingThatCanFail()
 } label {
     Text("Do something")
@@ -191,8 +189,6 @@ AsyncButton {
 }
 .asyncButtonStyle(.none)
 ```
-
-`AsyncButton` also support throwableButtonStyle modifier.
 
 You can also build your own customization by implementing `AsyncButtonStyle` protocol.
 
