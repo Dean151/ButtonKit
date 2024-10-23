@@ -196,7 +196,7 @@ AsyncButton {
 
 You can also build your own customization by implementing `AsyncButtonStyle` protocol.
 
-Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allow you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
+Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allows you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
 
 ### External triggering
 

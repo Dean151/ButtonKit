@@ -1,5 +1,5 @@
 //
-//  ThrowableButton.swift
+//  EstimatedProgressDemo.swift
 //  ButtonKit
 //
 //  MIT License

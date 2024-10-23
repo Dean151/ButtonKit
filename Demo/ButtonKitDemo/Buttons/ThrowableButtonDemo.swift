@@ -1,5 +1,5 @@
 //
-//  ThrowableButton.swift
+//  ThrowableButtonDemo.swift
 //  ButtonKit
 //
 //  MIT License

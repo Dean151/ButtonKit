@@ -1,5 +1,5 @@
 //
-//  ThrowableButton.swift
+//  DiscreteProgressDemo.swift
 //  ButtonKit
 //
 //  MIT License
