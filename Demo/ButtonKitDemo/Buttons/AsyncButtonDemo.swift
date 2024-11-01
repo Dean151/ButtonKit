@@ -31,41 +31,49 @@ import SwiftUI
 struct AsyncButtonDemo: View {
     var body: some View {
         VStack(spacing: 24) {
-            AsyncButton {
-                // Here you have a throwable & async closure!
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-            } label: {
-                Text("Overlay style")
-            }
-            .asyncButtonStyle(.overlay)
+            Group {
+                AsyncButton {
+                    // Here you have a throwable & async closure!
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                } label: {
+                    Text("Overlay style")
+                }
+                .asyncButtonStyle(.overlay)
 
-            AsyncButton {
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-            } label: {
-                Text("Leading style")
-            }
-            .asyncButtonStyle(.leading)
+                AsyncButton {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                } label: {
+                    Text("Leading style")
+                }
+                .asyncButtonStyle(.leading)
 
-            AsyncButton {
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-            } label: {
-                Text("Trailing style")
-            }
-            .asyncButtonStyle(.trailing)
+                AsyncButton {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                } label: {
+                    Text("Trailing style")
+                }
+                .asyncButtonStyle(.trailing)
 
-            AsyncButton {
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-            } label: {
-                Text("Pulse style")
-            }
-            .asyncButtonStyle(.pulse)
+                AsyncButton {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                } label: {
+                    Text("Pulse style")
+                }
+                .asyncButtonStyle(.pulse)
 
-            AsyncButton {
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-            } label: {
-                Text("No style")
+                AsyncButton {
+                    try await Task.sleep(nanoseconds: 2_000_000_000)
+                } label: {
+                    Text("No style")
+                }
+                .asyncButtonStyle(.none)
             }
-            .asyncButtonStyle(.none)
+            .asyncButtonTaskStarted { _ in
+                print("task started")
+            }
+            .asyncButtonTaskEnded {
+                print("task ended")
+            }
         }
         .buttonStyle(.borderedProminent)
     }

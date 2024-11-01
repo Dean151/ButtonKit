@@ -30,6 +30,32 @@ import SwiftUI
 @available(*, deprecated, renamed: "AsyncButton")
 public typealias ThrowableButton = AsyncButton
 
+enum AsyncButtonState: Equatable {
+    case idle
+    case started(Task<Void, Never>)
+    case ended
+
+    var isLoading: Bool {
+        switch self {
+        case .started:
+            return true
+        case .idle, .ended:
+            return false
+        }
+    }
+
+    mutating func cancel() {
+        switch self {
+        case .idle:
+            self = .ended
+        case .started(let task):
+            task.cancel()
+        case .ended:
+            break
+        }
+    }
+}
+
 public struct AsyncButton<P: TaskProgress, S: View>: View {
     @Environment(\.asyncButtonStyle)
     private var asyncButtonStyle
@@ -49,7 +75,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private let action: @MainActor (P) async throws -> Void
     private let label: S
 
-    @State private var task: Task<Void, Never>?
+    @State private var state: AsyncButtonState = .idle
     @ObservedObject private var progress: P
     @State private var errorCount = 0
 
@@ -61,7 +87,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         let label: AnyView
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
             label: AnyView(throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)),
-            isLoading: task != nil,
+            isLoading: state.isLoading,
             fractionCompleted: progress.fractionCompleted,
             cancel: cancel
         )
@@ -75,15 +101,15 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
             button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
-            isLoading: task != nil,
+            isLoading: state.isLoading,
             fractionCompleted: progress.fractionCompleted,
             cancel: cancel
         )
         return asyncButtonStyle
             .makeButton(configuration: asyncConfiguration)
-            .allowsHitTesting(allowsHitTestingWhenLoading || task == nil)
-            .disabled(disabledWhenLoading && task != nil)
-            .preference(key: AsyncButtonTaskPreferenceKey.self, value: task)
+            .allowsHitTesting(allowsHitTestingWhenLoading || !state.isLoading)
+            .disabled(disabledWhenLoading && state.isLoading)
+            .preference(key: AsyncButtonTaskPreferenceKey.self, value: state)
             .onAppear {
                 guard let id else {
                     return
@@ -113,10 +139,10 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     }
 
     private func perform() {
-        guard task == nil, isEnabled else {
+        guard !state.isLoading, isEnabled else {
             return
         }
-        task = Task {
+        state = .started(Task {
             // Initialize progress
             progress.reset()
             await progress.started()
@@ -127,13 +153,12 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             }
             // Reset progress
             await progress.ended()
-            task = nil
-        }
+            state = .ended
+        })
     }
 
     private func cancel() {
-        task?.cancel()
-        task = nil
+        state.cancel()
     }
 }
 

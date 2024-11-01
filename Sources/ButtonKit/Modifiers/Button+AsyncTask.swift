@@ -60,16 +60,15 @@ extension View {
 // Internal implementation
 
 struct AsyncButtonTaskPreferenceKey: PreferenceKey {
-    static let defaultValue: Task<Void, Never>? = nil
+    static let defaultValue: AsyncButtonState = .idle
 
-    static func reduce(value: inout Task<Void, Never>?, nextValue: () -> Task<Void, Never>?) {
+    static func reduce(value: inout AsyncButtonState, nextValue: () -> AsyncButtonState) {
         value = nextValue()
     }
 }
 
 struct OnAsyncButtonTaskChangeModifier: ViewModifier {
     let handler: AsyncButtonTaskChangedHandler
-    @State private var initialized = false
 
     init(handler: @escaping AsyncButtonTaskChangedHandler) {
         self.handler = handler
@@ -77,14 +76,21 @@ struct OnAsyncButtonTaskChangeModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onPreferenceChange(AsyncButtonTaskPreferenceKey.self) { task in
-                if task == nil && !initialized {
-                    // Ignore first preference change, a.k.a button initialization
-                    initialized = true
-                    return
+            .onPreferenceChange(AsyncButtonTaskPreferenceKey.self) { state in
+                MainActor.assumeIsolated {
+                    onTaskChanged(state)
                 }
-
-                handler(task)
             }
+    }
+
+    func onTaskChanged(_ state: AsyncButtonState) {
+        switch state {
+        case .started(let task):
+            handler(task)
+        case .ended:
+            handler(nil)
+        case .idle:
+            break
+        }
     }
 }
