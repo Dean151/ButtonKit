@@ -83,6 +83,7 @@ struct OnAsyncButtonTaskChangeModifier: ViewModifier {
             }
     }
 
+    @MainActor
     func onTaskChanged(_ state: AsyncButtonState) {
         switch state {
         case .started(let task):
