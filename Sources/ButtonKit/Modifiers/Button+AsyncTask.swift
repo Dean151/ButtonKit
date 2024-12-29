@@ -77,9 +77,13 @@ struct OnAsyncButtonTaskChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(AsyncButtonTaskPreferenceKey.self) { state in
+                #if swift(>=5.10)
                 MainActor.assumeIsolated {
                     onTaskChanged(state)
                 }
+                #else
+                onTaskChanged(state)
+                #endif
             }
     }
 
