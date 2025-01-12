@@ -49,6 +49,10 @@ struct ThrowableButtonDemo: View {
             .throwableButtonStyle(.none)
         }
         .buttonStyle(.borderedProminent)
+        .onButtonError { error in
+            // Do something with the error
+            print(error)
+        }
     }
 }
 

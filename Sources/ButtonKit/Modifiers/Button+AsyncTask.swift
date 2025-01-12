@@ -57,7 +57,7 @@ extension View {
     }
 }
 
-// Internal implementation
+// MARK: - Internal implementation
 
 struct AsyncButtonTaskPreferenceKey: PreferenceKey {
     static let defaultValue: AsyncButtonState = .idle
