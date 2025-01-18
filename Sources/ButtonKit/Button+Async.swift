@@ -78,6 +78,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     @State private var state: AsyncButtonState = .idle
     @ObservedObject private var progress: P
     @State private var errorCount = 0
+    @State private var lastError: Error?
 
     public var body: some View {
         let throwableLabelConfiguration = ThrowableButtonStyleLabelConfiguration(
@@ -110,6 +111,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .allowsHitTesting(allowsHitTestingWhenLoading || !state.isLoading)
             .disabled(disabledWhenLoading && state.isLoading)
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: state)
+            .preference(key: AsyncButtonErrorPreferenceKey.self, value: lastError.flatMap { .init(increment: errorCount, error: $0) })
             .onAppear {
                 guard let id else {
                     return
@@ -150,6 +152,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                 try await action(progress)
             } catch {
                 errorCount += 1
+                lastError = error
             }
             // Reset progress
             await progress.ended()
