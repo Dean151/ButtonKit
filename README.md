@@ -1,7 +1,7 @@
 # ButtonKit
 
-ButtonKit provide two SwiftUI buttons to deal with throwable and asynchronous actions.
-By default, SwiftUI button only accept a closure.
+ButtonKit provides a new a SwiftUI Button replacement to deal with throwable and asynchronous actions.
+By default, SwiftUI Button only accept a closure.
 
 With ButtonKit, you'll have access to an `AsyncButton` view, accepting a `() async throws -> Void` closure.
 
@@ -57,7 +57,7 @@ For now, only this shake behavior is built-in:
     </tr>
 </table>
 
-You can disable still it by passing `.none` to throwableButtonStyle:
+You can still disable it by passing `.none` to throwableButtonStyle:
 
 ```swift
 AsyncButton {
@@ -70,7 +70,7 @@ AsyncButton {
 
 You can also bring your own behavior using the `ThrowableButtonStyle` protocol.
 
-In ThrowableButtonStyle, you can implement `makeLabel`, `makeButton` or both to alterate the button look and behavior.
+In ThrowableButtonStyle, you can implement `makeLabel`, `makeButton` or both to alter the button look and behavior.
 
 ```swift
 public struct TryAgainThrowableButtonStyle: ThrowableButtonStyle {
@@ -192,7 +192,7 @@ AsyncButton {
 
 You can also build your own customization by implementing `AsyncButtonStyle` protocol.
 
-Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allows you to implement either `makeLabel`, `makeButton` or both to alterate the button look and behavior while loading is in progress.
+Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allows you to implement either `makeLabel`, `makeButton` or both to alter the button look and behavior while loading is in progress.
 
 ### External triggering
 
@@ -200,7 +200,7 @@ You might need to trigger the behavior behind a button with specific user action
 
 Therefore, to get free animated progress and errors behavior on your button, you can't just start the action of the button by yourself. You need the button to start it. 
 
-To do so, you need to set an unique identifier to your button:
+To do so, you need to set a unique identifier to your button:
 
 ```swift
 enum LoginViewButton: Hashable {
@@ -301,7 +301,7 @@ Available TaskProgress implementation are:
 
 ## Contribute
 
-You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributing:
+You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributions:
 
 - Improving documentation
 - Adding some automated tests 😜
