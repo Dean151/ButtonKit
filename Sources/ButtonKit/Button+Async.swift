@@ -75,6 +75,9 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private let action: @MainActor (P) async throws -> Void
     private let label: S
 
+    // Environmnent lies when called from triggerButton
+    // Let's copy it in our own State :)
+    @State private var isDisabled = false
     @State private var state: AsyncButtonState = .idle
     @ObservedObject private var progress: P
     @State private var errorCount = 0
@@ -113,6 +116,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: state)
             .preference(key: AsyncButtonErrorPreferenceKey.self, value: lastError.flatMap { .init(increment: errorCount, error: $0) })
             .onAppear {
+                isDisabled = !isEnabled
                 guard let id else {
                     return
                 }
@@ -123,6 +127,9 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                     return
                 }
                 triggerButton.unregister(id: id)
+            }
+            .onChange(of: isEnabled) { newValue in
+                isDisabled = !newValue
             }
     }
 
@@ -141,7 +148,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     }
 
     private func perform() {
-        guard !state.isLoading, isEnabled else {
+        guard !state.isLoading, !isDisabled else {
             return
         }
         state = .started(Task {
