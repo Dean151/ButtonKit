@@ -296,7 +296,7 @@ This would allow you to build logarithmic based progress, or a first step that i
 Available TaskProgress implementation are:
 - Indeterminate, default non-determinant progress with `.indeterminate`
 - Discrete linear (completed / total) with `.discrete(totalUnitsCount: Int)`
-- Estimated progress that fill the bar in the provided time interval, stopping à 85% to simulate a determinant loading with `.estimated(for: Duration)`
+- Estimated progress that fill the bar in the provided time interval, stopping at 85% to simulate determinant loading with `.estimated(for: Duration)`
 - (NS)Progress bridge with `.progress`
 
 ## Contribute
