@@ -80,13 +80,14 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     @State private var isDisabled = false
     @State private var state: AsyncButtonState = .idle
     @ObservedObject private var progress: P
-    @State private var errorCount = 0
-    @State private var lastError: Error?
+    @State private var numberOfFailures = 0
+    @State private var latestError: Error?
 
     public var body: some View {
         let throwableLabelConfiguration = ThrowableButtonStyleLabelConfiguration(
             label: AnyView(label),
-            errorCount: errorCount
+            latestError: latestError,
+            numberOfFailures: numberOfFailures
         )
         let label: AnyView
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
@@ -101,7 +102,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         }
         let throwableConfiguration = ThrowableButtonStyleButtonConfiguration(
             button: AnyView(button),
-            errorCount: errorCount
+            latestError: latestError,
+            numberOfFailures: numberOfFailures
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
             button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
@@ -114,7 +116,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .allowsHitTesting(allowsHitTestingWhenLoading || !state.isLoading)
             .disabled(disabledWhenLoading && state.isLoading)
             .preference(key: AsyncButtonTaskPreferenceKey.self, value: state)
-            .preference(key: AsyncButtonErrorPreferenceKey.self, value: lastError.flatMap { .init(increment: errorCount, error: $0) })
+            .preference(key: AsyncButtonErrorPreferenceKey.self, value: latestError.flatMap { .init(increment: numberOfFailures, error: $0) })
             .onAppear {
                 isDisabled = !isEnabled
                 guard let id else {
@@ -158,8 +160,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             do {
                 try await action(progress)
             } catch {
-                errorCount += 1
-                lastError = error
+                numberOfFailures += 1
+                latestError = error
             }
             // Reset progress
             await progress.ended()

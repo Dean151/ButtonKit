@@ -32,8 +32,8 @@ public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
 
     public func makeButton(configuration: ButtonConfiguration) -> some View {
         configuration.button
-            .modifier(Shake(animatableData: CGFloat(configuration.errorCount)))
-            .animation(.easeInOut, value: configuration.errorCount)
+            .modifier(Shake(animatableData: CGFloat(configuration.numberOfFailures)))
+            .animation(.easeInOut, value: configuration.numberOfFailures)
     }
 }
 

@@ -57,15 +57,25 @@ public struct ThrowableButtonStyleLabelConfiguration {
     public typealias Label = AnyView
 
     public let label: Label
+    public let latestError: Error?
     /// Is incremented at each new error
-    public let errorCount: Int
+    public let numberOfFailures: Int
+    @available(*, deprecated, renamed: "numberOfFailures")
+    public var errorCount: Int {
+        numberOfFailures
+    }
 }
 public struct ThrowableButtonStyleButtonConfiguration {
     public typealias Button = AnyView
 
     public let button: Button
+    public let latestError: Error?
     /// Is incremented at each new error
-    public let errorCount: Int
+    public let numberOfFailures: Int
+    @available(*, deprecated, renamed: "numberOfFailures")
+    public var errorCount: Int {
+        numberOfFailures
+    }
 }
 // MARK: SwiftUI Environment
 
