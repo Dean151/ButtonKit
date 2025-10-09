@@ -44,6 +44,23 @@ AsyncButton {
 }
 ```
 
+You can monitor when one of your buttons fails
+```swift
+Group {
+    AsyncButton(id: "Button 1") {
+      ...
+    }
+    AsyncButton(id: "Button 2") {
+      ...
+    }
+}
+.onButtonStateError { event in
+    // event.error will contain the Swift Error
+    // event.buttonID will contain either "button 1" or "button 2"
+    // if id parameter is omitted, a UUID is generated for the button.
+}
+```
+
 When the button closure throws, the button will shake by default
 
 <table>
@@ -131,30 +148,34 @@ AsyncButton {
 .allowsHitTestingWhenLoading(false)
 ```
 
-Access and react to the underlying task using `asyncButtonTaskStarted` or `asyncButtonTaskEnded` modifier.
+Access and react to the underlying button state using `onStateChange` parameter.
 ```swift
 AsyncButton {
   ...
-}
-.asyncButtonTaskStarted { task in
-    // Task started
-}
-.asyncButtonTaskEnded {
-    // Task ended or was cancelled
+} onStateChange: { state in
+  switch state {
+  case let .started(task):
+      // Task started
+  case let .ended(completion):
+      // Task ended, failed or was cancelled
+  }
 }
 ```
 
-You can summarize both using `asyncButtonTaskChanged` modifier.
+You can also monitor more than one button at once
 ```swift
-AsyncButton {
-  ...
-}
-.asyncButtonTaskChanged { task in
-    if let task {
-        // Task started
-    } else {
-        // Task ended or was cancelled
+Group {
+    AsyncButton(id: "Button 1") {
+      ...
     }
+    AsyncButton(id: "Button 2") {
+      ...
+    }
+}
+.onButtonStateChange { event in
+    // event.state will contain the actual state of the button
+    // event.buttonID will contain either "button 1" or "button 2"
+    // if id parameter is omitted, a UUID is generated for the button.
 }
 ```
 

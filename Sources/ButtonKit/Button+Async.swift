@@ -30,28 +30,57 @@ import SwiftUI
 @available(*, deprecated, renamed: "AsyncButton")
 public typealias ThrowableButton = AsyncButton
 
-enum AsyncButtonState: Equatable {
-    case idle
-    case started(Task<Void, Never>)
-    case ended
+public enum AsyncButtonCompletion: Equatable {
+    case completed
+    case cancelled
+    case errored(error: Error, numberOfFailures: Int)
 
-    var isLoading: Bool {
+    public static func ==(lhs: AsyncButtonCompletion, rhs: AsyncButtonCompletion) -> Bool {
+        switch (lhs, rhs) {
+        case (.completed, .completed): true
+        case (.cancelled, .cancelled): true
+        case let (.errored(_, lhs), .errored(_, rhs)): lhs == rhs
+        default: false
+        }
+    }
+}
+
+@MainActor
+public enum AsyncButtonState: Equatable {
+    case started(Task<Void, Never>)
+    case ended(AsyncButtonCompletion)
+
+    mutating func cancel() {
+        switch self {
+        case let .started(task):
+            task.cancel()
+            self = .ended(.cancelled)
+        default:
+            break
+        }
+    }
+
+    public var isLoading: Bool {
         switch self {
         case .started:
             return true
-        case .idle, .ended:
+        case .ended:
             return false
         }
     }
 
-    mutating func cancel() {
+    public var error: Error? {
         switch self {
-        case .idle:
-            self = .ended
-        case .started(let task):
-            task.cancel()
-        case .ended:
-            break
+        case let .ended(.errored(error, _)): error
+        default: nil
+        }
+    }
+
+    @available(*, deprecated)
+    var task: Task<Void, Never>? {
+        switch self {
+        case let .started(task): task
+        default : nil
         }
     }
 }
@@ -71,14 +100,16 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private var triggerButton
 
     private let role: ButtonRole?
+    private let uuid = UUID()
     private let id: AnyHashable?
     private let action: @MainActor (P) async throws -> Void
     private let label: S
+    private let onStateChange: (@MainActor (AsyncButtonState) -> Void)?
 
     // Environmnent lies when called from triggerButton
     // Let's copy it in our own State :)
     @State private var isDisabled = false
-    @State private var state: AsyncButtonState = .idle
+    @State private var state: AsyncButtonState? = nil
     @ObservedObject private var progress: P
     @State private var numberOfFailures = 0
     @State private var latestError: Error?
@@ -92,7 +123,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         let label: AnyView
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
             label: AnyView(throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)),
-            isLoading: state.isLoading,
+            isLoading: state?.isLoading ?? false,
             fractionCompleted: progress.fractionCompleted,
             cancel: cancel
         )
@@ -107,16 +138,18 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
             button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
-            isLoading: state.isLoading,
+            isLoading: state?.isLoading ?? false,
             fractionCompleted: progress.fractionCompleted,
             cancel: cancel
         )
         return asyncButtonStyle
             .makeButton(configuration: asyncConfiguration)
-            .allowsHitTesting(allowsHitTestingWhenLoading || !state.isLoading)
-            .disabled(disabledWhenLoading && state.isLoading)
-            .preference(key: AsyncButtonTaskPreferenceKey.self, value: state)
-            .preference(key: AsyncButtonErrorPreferenceKey.self, value: latestError.flatMap { .init(increment: numberOfFailures, error: $0) })
+            .allowsHitTesting(allowsHitTestingWhenLoading || !(state?.isLoading ?? false))
+            .disabled(disabledWhenLoading && (state?.isLoading ?? false))
+            .preference(
+                key: ButtonLatestStatePreferenceKey.self,
+                value: state.flatMap { .init(buttonID: id ?? uuid as AnyHashable, state: $0) }
+            )
             .onAppear {
                 isDisabled = !isEnabled
                 guard let id else {
@@ -130,6 +163,12 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                 }
                 triggerButton.unregister(id: id)
             }
+            .onChange(of: state) { newState in
+                guard let newState else {
+                    return
+                }
+                onStateChange?(newState)
+            }
             .onChange(of: isEnabled) { newValue in
                 isDisabled = !newValue
             }
@@ -140,37 +179,42 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         id: AnyHashable? = nil,
         progress: P,
         action: @MainActor @escaping (P) async throws -> Void,
-        @ViewBuilder label: @escaping () -> S
+        @ViewBuilder label: @escaping () -> S,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = label()
+        self.onStateChange = onStateChange
     }
 
     private func perform() {
-        guard !state.isLoading, !isDisabled else {
+        guard !(state?.isLoading ?? false), !isDisabled else {
             return
         }
         state = .started(Task {
             // Initialize progress
             progress.reset()
             await progress.started()
+            let completion: AsyncButtonCompletion
             do {
                 try await action(progress)
+                completion = .completed
             } catch {
-                numberOfFailures += 1
                 latestError = error
+                numberOfFailures += 1
+                completion = .errored(error: error, numberOfFailures: numberOfFailures)
             }
             // Reset progress
             await progress.ended()
-            state = .ended
+            state = .ended(completion)
         })
     }
 
     private func cancel() {
-        state.cancel()
+        state?.cancel()
     }
 }
 
@@ -180,13 +224,15 @@ extension AsyncButton where S == Text {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Text(titleKey)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -195,13 +241,15 @@ extension AsyncButton where S == Text {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Text(title)
+        self.onStateChange = onStateChange
     }
 }
 
@@ -212,13 +260,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(titleKey, image: name)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -228,13 +278,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(title, image: name)
+        self.onStateChange = onStateChange
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -244,13 +296,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(titleKey, image: image)
+        self.onStateChange = onStateChange
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -261,13 +315,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(title, image: image)
+        self.onStateChange = onStateChange
     }
 
     public init(
@@ -276,13 +332,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(titleKey, systemImage: systemImage)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -292,13 +350,15 @@ extension AsyncButton where S == Label<Text, Image> {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         progress: P,
-        action: @MainActor @escaping (P) async throws -> Void
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
         self.label = Label(title, systemImage: systemImage)
+        self.onStateChange = onStateChange
     }
 }
 
@@ -307,13 +367,15 @@ extension AsyncButton where P == IndeterminateProgress {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         action: @escaping () async throws -> Void,
-        @ViewBuilder label: @escaping () -> S
+        @ViewBuilder label: @escaping () -> S,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = label()
+        self.onStateChange = onStateChange
     }
 }
 
@@ -322,13 +384,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Text(titleKey)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -336,13 +400,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Text(title)
+        self.onStateChange = onStateChange
     }
 }
 
@@ -352,13 +418,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image name: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(titleKey, image: name)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -367,13 +435,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image name: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(title, image: name)
+        self.onStateChange = onStateChange
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -382,13 +452,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image: ImageResource,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(titleKey, image: image)
+        self.onStateChange = onStateChange
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -398,13 +470,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image: ImageResource,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(title, image: image)
+        self.onStateChange = onStateChange
     }
 
     public init(
@@ -412,13 +486,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(titleKey, systemImage: systemImage)
+        self.onStateChange = onStateChange
     }
 
     @_disfavoredOverload
@@ -427,13 +503,15 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        action: @escaping () async throws -> Void
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.role = role
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
         self.label = Label(title, systemImage: systemImage)
+        self.onStateChange = onStateChange
     }
 }
 

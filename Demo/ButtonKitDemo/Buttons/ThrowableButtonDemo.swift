@@ -49,9 +49,9 @@ struct ThrowableButtonDemo: View {
             .throwableButtonStyle(.none)
         }
         .buttonStyle(.borderedProminent)
-        .onButtonError { error in
+        .onButtonStateError { event in
             // Do something with the error
-            print(error)
+            print("Button \(event.buttonID) failed with \(event.error)")
         }
     }
 }

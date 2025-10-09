@@ -34,9 +34,10 @@ extension AsyncButton where P == IndeterminateProgress {
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
         intent: some AppIntent,
-        @ViewBuilder label: @escaping () -> S
+        @ViewBuilder label: @escaping () -> S,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(role: role, id: id, action: { _ = try await intent.perform() }, label: label)
+        self.init(role: role, id: id, action: { _ = try await intent.perform() }, label: label, onStateChange: onStateChange)
     }
 }
 
@@ -46,9 +47,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(titleKey, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(titleKey, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @_disfavoredOverload
@@ -56,9 +58,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
         _ title: some StringProtocol,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(title, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(title, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 }
 
@@ -69,9 +72,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image name: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(titleKey, image: name, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(titleKey, image: name, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @_disfavoredOverload
@@ -80,9 +84,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image name: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(title, image: name, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(title, image: name, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -91,9 +96,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image: ImageResource,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(titleKey, image: image, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(titleKey, image: image, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -103,9 +109,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         image: ImageResource,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(title, image: image, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(title, image: image, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     public init(
@@ -113,9 +120,10 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(titleKey, systemImage: systemImage, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(titleKey, systemImage: systemImage, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @_disfavoredOverload
@@ -124,8 +132,9 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         systemImage: String,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
-        intent: some AppIntent
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
-        self.init(title, systemImage: systemImage, role: role, id: id, action: { _ = try await intent.perform() })
+        self.init(title, systemImage: systemImage, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 }

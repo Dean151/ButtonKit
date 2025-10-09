@@ -61,6 +61,15 @@ struct AsyncButtonDemo: View {
                 }
                 .asyncButtonStyle(.pulse)
 
+                if #available(iOS 18.0, *) {
+                    AsyncButton {
+                        try await Task.sleep(nanoseconds: 2_000_000_000)
+                    } label: {
+                        Label("Symbol effect", systemImage: "ellipsis")
+                    }
+                    .asyncButtonStyle(.symbolEffect(.variableColor))
+                }
+
                 AsyncButton {
                     try await Task.sleep(nanoseconds: 2_000_000_000)
                 } label: {
@@ -68,11 +77,17 @@ struct AsyncButtonDemo: View {
                 }
                 .asyncButtonStyle(.none)
             }
-            .asyncButtonTaskStarted { _ in
-                print("task started")
-            }
-            .asyncButtonTaskEnded {
-                print("task ended")
+            .onButtonStateChange { event in
+                switch event.state {
+                case .started:
+                    print("task started: \(event.buttonID)")
+                case .ended(.completed):
+                    print("task completed: \(event.buttonID)")
+                case .ended(.cancelled):
+                    print("task cancelled: \(event.buttonID)")
+                case .ended(.errored(let error, _)):
+                    print("task errored: \(event.buttonID) \(error)")
+                }
             }
         }
         .buttonStyle(.borderedProminent)
