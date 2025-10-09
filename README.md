@@ -16,7 +16,7 @@ Install using Swift Package Manager
 
 ```
 dependencies: [
-    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.3.0"),
+    .package(url: "https://github.com/Dean151/ButtonKit.git", from: "0.7.0"),
 ],
 targets: [
     .target(name: "MyTarget", dependencies: [
@@ -46,14 +46,14 @@ AsyncButton {
 
 When the button closure throws, the button will shake by default
 
-For now, only this shake behavior is built-in:
-
 <table>
     <tr>
         <td><img src="/Preview/shake.gif" width="250"></td>
+        <td>No preview</td>
     </tr>
     <tr>
         <td>.throwableButtonStyle(.shake)</td>
+        <td>.throwableButtonStyle(.symbolEffect(.wiggle))</td>
     </tr>
 </table>
 
@@ -177,6 +177,14 @@ All sort of styles are built-in:
     <tr>
         <td>.asyncButtonStyle(.leading)</td>
         <td>.asyncButtonStyle(.trailing)</td>
+    </tr>
+    <tr>
+        <td>No preview</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>.asyncButtonStyle(.symbolEffect(.bounce))</td>
+        <td></td>
     </tr>
 </table>
 
