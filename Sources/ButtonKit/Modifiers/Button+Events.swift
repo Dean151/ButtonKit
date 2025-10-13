@@ -32,12 +32,25 @@ import SwiftUI
 public typealias ButtonStateChangedHandler = @MainActor @Sendable (StateChangedEvent) -> Void
 public typealias ButtonStateErrorHandler = @MainActor @Sendable (ErrorOccurredEvent) -> Void
 
+#if swift(>=6.2)
 @MainActor
 public struct StateChangedEvent: @MainActor Equatable {
     public let buttonID: AnyHashable
     public let state: AsyncButtonState
     let time: Date = .now
 }
+#else
+@MainActor
+public struct StateChangedEvent: @preconcurrency Equatable {
+    public let buttonID: AnyHashable
+    public let state: AsyncButtonState
+    let time: Date = .now
+
+    public static func ==(lhs: StateChangedEvent, rhs: StateChangedEvent) -> Bool {
+        lhs.buttonID == rhs.buttonID && lhs.state == rhs.state && lhs.time == rhs.time
+    }
+}
+#endif
 
 public struct ErrorOccurredEvent {
     public let buttonID: AnyHashable
@@ -138,13 +151,9 @@ struct OnButtonLatestStateChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(ButtonLatestStatePreferenceKey.self) { state in
-                #if swift(>=5.10)
                 MainActor.assumeIsolated {
                     handler(state)
                 }
-                #else
-                handler(state)
-                #endif
             }
     }
 }

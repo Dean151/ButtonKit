@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+Shake.swift
+//  ThrowableStyle+SymbolEffect.swift
 //  ButtonKit
 //
 //  MIT License
@@ -27,7 +27,7 @@
 
 import SwiftUI
 
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 public struct SymbolEffectThrowableButtonStyle<Effect: SymbolEffect&DiscreteSymbolEffect>: ThrowableButtonStyle {
     let effect: Effect
 
@@ -37,44 +37,45 @@ public struct SymbolEffectThrowableButtonStyle<Effect: SymbolEffect&DiscreteSymb
     }
 }
 
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<BounceSymbolEffect> {
     public static func symbolEffect(_ effect: BounceSymbolEffect) -> some ThrowableButtonStyle {
         SymbolEffectThrowableButtonStyle(effect: effect)
     }
 }
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
-extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<BreatheSymbolEffect> {
-    public static func symbolEffect(_ effect: BreatheSymbolEffect) -> some ThrowableButtonStyle {
-        SymbolEffectThrowableButtonStyle(effect: effect)
-    }
-}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<PulseSymbolEffect> {
     public static func symbolEffect(_ effect: PulseSymbolEffect) -> some ThrowableButtonStyle {
         SymbolEffectThrowableButtonStyle(effect: effect)
     }
 }
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
-extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<RotateSymbolEffect> {
-    public static func symbolEffect(_ effect: RotateSymbolEffect) -> some ThrowableButtonStyle {
-        SymbolEffectThrowableButtonStyle(effect: effect)
-    }
-}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<VariableColorSymbolEffect> {
     public static func symbolEffect(_ effect: VariableColorSymbolEffect) -> some ThrowableButtonStyle {
         SymbolEffectThrowableButtonStyle(effect: effect)
     }
 }
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+
+@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<BreatheSymbolEffect> {
+    public static func symbolEffect(_ effect: BreatheSymbolEffect) -> some ThrowableButtonStyle {
+        SymbolEffectThrowableButtonStyle(effect: effect)
+    }
+}
+@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<RotateSymbolEffect> {
+    public static func symbolEffect(_ effect: RotateSymbolEffect) -> some ThrowableButtonStyle {
+        SymbolEffectThrowableButtonStyle(effect: effect)
+    }
+}
+@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<WiggleSymbolEffect> {
     public static func symbolEffect(_ effect: WiggleSymbolEffect) -> some ThrowableButtonStyle {
         SymbolEffectThrowableButtonStyle(effect: effect)
     }
 }
 
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 #Preview {
     AsyncButton {
         throw NSError() as Error
@@ -82,5 +83,5 @@ extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<Wi
         Label("Hello", systemImage: "link")
     }
     .buttonStyle(.borderedProminent)
-    .throwableButtonStyle(.symbolEffect(.wiggle.down))
+    .throwableButtonStyle(.symbolEffect(.bounce))
 }
