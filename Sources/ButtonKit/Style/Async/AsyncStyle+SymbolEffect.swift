@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+Shake.swift
+//  AsyncStyle+SymbolEffect.swift
 //  ButtonKit
 //
 //  MIT License
@@ -43,6 +43,28 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<AppearSymb
         SymbolEffectAsyncButtonStyle(effect: effect)
     }
 }
+
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DisappearSymbolEffect> {
+    public static func symbolEffect(_ effect: DisappearSymbolEffect) -> some AsyncButtonStyle {
+        SymbolEffectAsyncButtonStyle(effect: effect)
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<PulseSymbolEffect> {
+    public static func symbolEffect(_ effect: PulseSymbolEffect) -> some AsyncButtonStyle {
+        SymbolEffectAsyncButtonStyle(effect: effect)
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<ScaleSymbolEffect> {
+    public static func symbolEffect(_ effect: ScaleSymbolEffect) -> some AsyncButtonStyle {
+        SymbolEffectAsyncButtonStyle(effect: effect)
+    }
+}
+
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
 extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<BounceSymbolEffect> {
     public static func symbolEffect(_ effect: BounceSymbolEffect) -> some AsyncButtonStyle {
@@ -55,39 +77,10 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<BreatheSym
         SymbolEffectAsyncButtonStyle(effect: effect)
     }
 }
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DisappearSymbolEffect> {
-    public static func symbolEffect(_ effect: DisappearSymbolEffect) -> some AsyncButtonStyle {
-        SymbolEffectAsyncButtonStyle(effect: effect)
-    }
-}
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
-extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DrawOffSymbolEffect> {
-    public static func symbolEffect(_ effect: DrawOffSymbolEffect) -> some AsyncButtonStyle {
-        SymbolEffectAsyncButtonStyle(effect: effect)
-    }
-}
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
-extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DrawOnSymbolEffect> {
-    public static func symbolEffect(_ effect: DrawOnSymbolEffect) -> some AsyncButtonStyle {
-        SymbolEffectAsyncButtonStyle(effect: effect)
-    }
-}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<PulseSymbolEffect> {
-    public static func symbolEffect(_ effect: PulseSymbolEffect) -> some AsyncButtonStyle {
-        SymbolEffectAsyncButtonStyle(effect: effect)
-    }
-}
+
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
 extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<RotateSymbolEffect> {
     public static func symbolEffect(_ effect: RotateSymbolEffect) -> some AsyncButtonStyle {
-        SymbolEffectAsyncButtonStyle(effect: effect)
-    }
-}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<ScaleSymbolEffect> {
-    public static func symbolEffect(_ effect: ScaleSymbolEffect) -> some AsyncButtonStyle {
         SymbolEffectAsyncButtonStyle(effect: effect)
     }
 }
@@ -104,7 +97,24 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<WiggleSymb
     }
 }
 
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+#if swift(>=6.2)
+
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DrawOffSymbolEffect> {
+    public static func symbolEffect(_ effect: DrawOffSymbolEffect) -> some AsyncButtonStyle {
+        SymbolEffectAsyncButtonStyle(effect: effect)
+    }
+}
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<DrawOnSymbolEffect> {
+    public static func symbolEffect(_ effect: DrawOnSymbolEffect) -> some AsyncButtonStyle {
+        SymbolEffectAsyncButtonStyle(effect: effect)
+    }
+}
+
+#endif
+
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 #Preview("Indeterminate") {
     AsyncButton {
         try await Task.sleep(nanoseconds: 30_000_000_000)
@@ -112,5 +122,5 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<WiggleSymb
         Image(systemName: "ellipsis")
     }
     .buttonStyle(.borderedProminent)
-    .asyncButtonStyle(.symbolEffect(.variableColor))
+    .asyncButtonStyle(.symbolEffect(.pulse))
 }

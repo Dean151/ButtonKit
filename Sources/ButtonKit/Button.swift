@@ -1,5 +1,5 @@
 //
-//  Button+Async.swift
+//  Button.swift
 //  ButtonKit
 //
 //  MIT License
@@ -100,7 +100,6 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private var triggerButton
 
     private let role: ButtonRole?
-    private let uuid = UUID()
     private let id: AnyHashable?
     private let action: @MainActor (P) async throws -> Void
     private let label: S
@@ -109,6 +108,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     // Environmnent lies when called from triggerButton
     // Let's copy it in our own State :)
     @State private var isDisabled = false
+    @State private var uuid = UUID()
     @State private var state: AsyncButtonState? = nil
     @ObservedObject private var progress: P
     @State private var numberOfFailures = 0

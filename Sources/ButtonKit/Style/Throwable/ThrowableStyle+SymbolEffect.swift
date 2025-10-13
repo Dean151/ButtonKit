@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+Shake.swift
+//  ThrowableStyle+SymbolEffect.swift
 //  ButtonKit
 //
 //  MIT License
@@ -74,7 +74,7 @@ extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<Wi
     }
 }
 
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 #Preview {
     AsyncButton {
         throw NSError() as Error
@@ -82,5 +82,5 @@ extension ThrowableButtonStyle where Self == SymbolEffectThrowableButtonStyle<Wi
         Label("Hello", systemImage: "link")
     }
     .buttonStyle(.borderedProminent)
-    .throwableButtonStyle(.symbolEffect(.wiggle.down))
+    .throwableButtonStyle(.symbolEffect(.bounce))
 }
