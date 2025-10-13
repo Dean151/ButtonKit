@@ -1,5 +1,5 @@
 //
-//  ThrowableStyle+Shake.swift
+//  ThrowableStyle+SymbolEffect.swift
 //  ButtonKit
 //
 //  MIT License

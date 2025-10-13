@@ -138,13 +138,9 @@ struct OnButtonLatestStateChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(ButtonLatestStatePreferenceKey.self) { state in
-                #if swift(>=5.10)
                 MainActor.assumeIsolated {
                     handler(state)
                 }
-                #else
-                handler(state)
-                #endif
             }
     }
 }
