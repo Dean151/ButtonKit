@@ -194,23 +194,40 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         guard !(state?.isLoading ?? false), !isDisabled else {
             return
         }
-        state = .started(Task {
-            // Initialize progress
-            progress.reset()
-            await progress.started()
-            let completion: AsyncButtonCompletion
-            do {
-                try await action(progress)
-                completion = .completed
-            } catch {
-                latestError = error
-                numberOfFailures += 1
-                completion = .errored(error: error, numberOfFailures: numberOfFailures)
+        if #available(iOS 26.0, tvOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            var immediateTaskEnded = false
+            let immediateTask = Task.immediate {
+                let completion = await performAsyncAction()
+                state = .ended(completion)
+                immediateTaskEnded = true
             }
-            // Reset progress
-            await progress.ended()
-            state = .ended(completion)
-        })
+            if !immediateTaskEnded {
+                state = .started(immediateTask)
+            }
+        } else {
+            state = .started(Task {
+                let completion = await performAsyncAction()
+                state = .ended(completion)
+            })
+        }
+    }
+
+    private func performAsyncAction() async -> AsyncButtonCompletion {
+        // Initialize progress
+        progress.reset()
+        await progress.started()
+        let completion: AsyncButtonCompletion
+        do {
+            try await action(progress)
+            completion = .completed
+        } catch {
+            latestError = error
+            numberOfFailures += 1
+            completion = .errored(error: error, numberOfFailures: numberOfFailures)
+        }
+        // Reset progress
+        await progress.ended()
+        return completion
     }
 
     private func cancel() {
