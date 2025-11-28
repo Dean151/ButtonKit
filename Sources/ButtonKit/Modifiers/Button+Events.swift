@@ -40,15 +40,10 @@ public struct StateChangedEvent: @MainActor Equatable {
     let time: Date = .now
 }
 #else
-@MainActor
-public struct StateChangedEvent: @preconcurrency Equatable {
-    public let buttonID: AnyHashable
+public struct StateChangedEvent: Equatable, Sendable {
+    nonisolated(unsafe) public let buttonID: AnyHashable
     public let state: AsyncButtonState
     let time: Date = .now
-
-    public static func ==(lhs: StateChangedEvent, rhs: StateChangedEvent) -> Bool {
-        lhs.buttonID == rhs.buttonID && lhs.state == rhs.state && lhs.time == rhs.time
-    }
 }
 #endif
 
