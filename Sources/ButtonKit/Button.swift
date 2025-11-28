@@ -194,6 +194,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         guard !(state?.isLoading ?? false), !isDisabled else {
             return
         }
+#if swift(>=6.2)
         if #available(iOS 26.0, tvOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
             var immediateTaskEnded = false
             let immediateTask = Task.immediate {
@@ -210,6 +211,12 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                 state = .ended(completion)
             })
         }
+#else
+        state = .started(Task {
+            let completion = await performAsyncAction()
+            state = .ended(completion)
+        })
+#endif
     }
 
     private func performAsyncAction() async -> AsyncButtonCompletion {
