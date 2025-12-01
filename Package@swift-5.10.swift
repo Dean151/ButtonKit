@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "ButtonKit",
-    platforms: [.iOS(.v15), .tvOS(.v15), .watchOS(.v8), .macOS(.v12), .visionOS(.v1)],
+    platforms: [.iOS(.v16), .tvOS(.v16), .watchOS(.v10), .macOS(.v13), .visionOS(.v1)],
     products: [
         .library(name: "ButtonKit", targets: ["ButtonKit"]),
     ],

@@ -44,6 +44,16 @@ extension AsyncButton where P == IndeterminateProgress {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension AsyncButton where P == IndeterminateProgress, S == Text {
     public init(
+        _ titleKey: LocalizedStringResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.init(titleKey, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
+    }
+    
+    public init(
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
@@ -68,6 +78,17 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> {
     public init(
+        _ titleKey: LocalizedStringResource,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.init(titleKey, image: name, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
+    }
+    
+    public init(
         _ titleKey: LocalizedStringKey,
         image name: String,
         role: ButtonRole? = nil,
@@ -88,6 +109,18 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.init(title, image: name, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
+    }
+    
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    public init(
+        _ titleKey: LocalizedStringResource,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.init(titleKey, image: image, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -113,6 +146,17 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
     ) {
         self.init(title, image: image, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
+    }
+    
+    public init(
+        _ titleKey: LocalizedStringResource,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        intent: some AppIntent,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.init(titleKey, systemImage: systemImage, role: role, id: id, action: { _ = try await intent.perform() }, onStateChange: onStateChange)
     }
 
     public init(

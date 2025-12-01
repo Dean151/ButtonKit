@@ -220,6 +220,23 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
 
 extension AsyncButton where S == Text {
     public init(
+        _ titleKey: LocalizedStringResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Text(titleKey)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
+    public init(
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
@@ -255,6 +272,24 @@ extension AsyncButton where S == Text {
 
 extension AsyncButton where S == Label<Text, Image> {
     public init(
+        _ titleKey: LocalizedStringResource,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, image: name)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
+    public init(
         _ titleKey: LocalizedStringKey,
         image name: String,
         role: ButtonRole? = nil,
@@ -288,8 +323,27 @@ extension AsyncButton where S == Label<Text, Image> {
         self.label = Label(title, image: name)
         self.onStateChange = onStateChange
     }
+    
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    public init(
+        _ titleKey: LocalizedStringResource,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, image: image)
+        self.onStateChange = onStateChange
+    }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    @_disfavoredOverload
     public init(
         _ titleKey: LocalizedStringKey,
         image: ImageResource,
@@ -326,6 +380,24 @@ extension AsyncButton where S == Label<Text, Image> {
         self.onStateChange = onStateChange
     }
 
+    public init(
+        _ titleKey: LocalizedStringResource,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        progress: P,
+        action: @MainActor @escaping (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: progress)
+        self.action = action
+        self.label = Label(titleKey, systemImage: systemImage)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
     public init(
         _ titleKey: LocalizedStringKey,
         systemImage: String,
@@ -381,6 +453,22 @@ extension AsyncButton where P == IndeterminateProgress {
 
 extension AsyncButton where P == IndeterminateProgress, S == Text {
     public init(
+        _ titleKey: LocalizedStringResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Text(titleKey)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
+    public init(
         _ titleKey: LocalizedStringKey,
         role: ButtonRole? = nil,
         id: AnyHashable? = nil,
@@ -414,6 +502,23 @@ extension AsyncButton where P == IndeterminateProgress, S == Text {
 
 extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> {
     public init(
+        _ titleKey: LocalizedStringResource,
+        image name: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, image: name)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
+    public init(
         _ titleKey: LocalizedStringKey,
         image name: String,
         role: ButtonRole? = nil,
@@ -445,8 +550,26 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.label = Label(title, image: name)
         self.onStateChange = onStateChange
     }
+    
+    @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    public init(
+        _ titleKey: LocalizedStringResource,
+        image: ImageResource,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, image: image)
+        self.onStateChange = onStateChange
+    }
 
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+    @_disfavoredOverload
     public init(
         _ titleKey: LocalizedStringKey,
         image: ImageResource,
@@ -481,6 +604,23 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.onStateChange = onStateChange
     }
 
+    public init(
+        _ titleKey: LocalizedStringResource,
+        systemImage: String,
+        role: ButtonRole? = nil,
+        id: AnyHashable? = nil,
+        action: @escaping () async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)? = nil
+    ) {
+        self.role = role
+        self.id = id
+        self._progress = .init(initialValue: .indeterminate)
+        self.action = { _ in try await action()}
+        self.label = Label(titleKey, systemImage: systemImage)
+        self.onStateChange = onStateChange
+    }
+    
+    @_disfavoredOverload
     public init(
         _ titleKey: LocalizedStringKey,
         systemImage: String,
