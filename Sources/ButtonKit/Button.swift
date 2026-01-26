@@ -30,7 +30,7 @@ import SwiftUI
 @available(*, deprecated, renamed: "AsyncButton")
 public typealias ThrowableButton = AsyncButton
 
-public enum AsyncButtonCompletion: Equatable {
+public enum AsyncButtonCompletion: Equatable, Sendable {
     case completed
     case cancelled
     case errored(error: Error, numberOfFailures: Int)
@@ -47,7 +47,7 @@ public enum AsyncButtonCompletion: Equatable {
 
 @MainActor
 public enum AsyncButtonState: Equatable {
-    case started(Task<Void, Never>)
+    case started(Task<AsyncButtonCompletion, Never>)
     case ended(AsyncButtonCompletion)
 
     mutating func cancel() {
@@ -77,7 +77,7 @@ public enum AsyncButtonState: Equatable {
     }
 
     @available(*, deprecated)
-    var task: Task<Void, Never>? {
+    var task: Task<AsyncButtonCompletion, Never>? {
         switch self {
         case let .started(task): task
         default : nil
@@ -128,7 +128,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             cancel: cancel
         )
         label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
-        let button = Button(role: role, action: perform) {
+        let button = Button(role: role, action: onButtonPress) {
             label
         }
         let throwableConfiguration = ThrowableButtonStyleButtonConfiguration(
@@ -155,7 +155,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                 guard let id else {
                     return
                 }
-                triggerButton.register(id: id, action: perform)
+                triggerButton.register(id: id, action: onButtonPress)
             }
             .onDisappear {
                 guard let id else {
@@ -190,36 +190,46 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         self.onStateChange = onStateChange
     }
 
-    private func perform() {
+    private func onButtonPress() {
         guard !(state?.isLoading ?? false), !isDisabled else {
             return
         }
+        let task: Task<AsyncButtonCompletion, Never>
 #if swift(>=6.2)
         if #available(iOS 26.0, tvOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
-            var immediateTaskEnded = false
-            let immediateTask = Task.immediate {
-                let completion = await performAsyncAction()
-                state = .ended(completion)
-                immediateTaskEnded = true
-            }
-            if !immediateTaskEnded {
-                state = .started(immediateTask)
+            task = Task.immediate(priority: .userInitiated) {
+                return await runUnderlyingAction()
             }
         } else {
-            state = .started(Task {
-                let completion = await performAsyncAction()
-                state = .ended(completion)
-            })
+            task = Task(priority: .userInitiated) {
+                return await runUnderlyingAction()
+            }
         }
 #else
-        state = .started(Task {
-            let completion = await performAsyncAction()
-            state = .ended(completion)
-        })
+        task = Task(priority: .userInitiated) {
+            return await runUnderlyingAction()
+        }
+#endif
+        // Always set task as started to not break the button event flow
+        state = .started(task)
+#if swift(>=6.2)
+        if #available(iOS 26.0, tvOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            Task.immediate(priority: .userInitiated) {
+                state = .ended(await task.value)
+            }
+        } else {
+            Task(priority: .userInitiated) {
+                state = .ended(await task.value)
+            }
+        }
+#else
+        Task(priority: .userInitiated) {
+            state = .ended(await task.value)
+        }
 #endif
     }
 
-    private func performAsyncAction() async -> AsyncButtonCompletion {
+    private func runUnderlyingAction() async -> AsyncButtonCompletion {
         // Initialize progress
         progress.reset()
         await progress.started()

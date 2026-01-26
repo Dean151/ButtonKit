@@ -74,9 +74,9 @@ extension View {
 // MARK: Deprecated public protocol
 
 @available(*, deprecated)
-public typealias AsyncButtonTaskStartedHandler = @MainActor @Sendable (Task<Void, Never>) -> Void
+public typealias AsyncButtonTaskStartedHandler = @MainActor @Sendable (Task<AsyncButtonCompletion, Never>) -> Void
 @available(*, deprecated)
-public typealias AsyncButtonTaskChangedHandler = @MainActor @Sendable (Task<Void, Never>?) -> Void
+public typealias AsyncButtonTaskChangedHandler = @MainActor @Sendable (Task<AsyncButtonCompletion, Never>?) -> Void
 @available(*, deprecated)
 public typealias AsyncButtonTaskEndedHandler = @MainActor @Sendable () -> Void
 @available(*, deprecated)
