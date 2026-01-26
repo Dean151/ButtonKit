@@ -40,6 +40,7 @@ public struct StateChangedEvent: @MainActor Equatable {
     let time: Date = .now
 }
 #else
+@MainActor
 public struct StateChangedEvent: Equatable, Sendable {
     nonisolated(unsafe) public let buttonID: AnyHashable
     public let state: AsyncButtonState
