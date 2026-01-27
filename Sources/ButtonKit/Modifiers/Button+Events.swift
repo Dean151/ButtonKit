@@ -39,6 +39,12 @@ public struct StateChangedEvent: @MainActor Equatable {
     public let state: AsyncButtonState
     let time: Date = .now
 }
+#elseif swift(>=6.0)
+public struct StateChangedEvent: Equatable, Sendable {
+    nonisolated(unsafe) public let buttonID: AnyHashable
+    public let state: AsyncButtonState
+    let time: Date = .now
+}
 #else
 @MainActor
 public struct StateChangedEvent: Equatable, Sendable {
