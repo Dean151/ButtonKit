@@ -137,8 +137,10 @@ struct ButtonLatestStatePreferenceKey: PreferenceKey {
         guard let next = nextValue() else {
             return
         }
-        if value == nil || next.time > value!.time {
-            value = next
+        MainActor.assumeIsolated {
+            if value == nil || next.time > value!.time {
+                value = next
+            }
         }
     }
 }
