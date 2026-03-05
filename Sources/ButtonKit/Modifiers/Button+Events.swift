@@ -130,6 +130,21 @@ extension View {
 
 typealias OptionalButtonStateChangedHandler = @MainActor @Sendable (StateChangedEvent?) -> Void
 
+#if swift(>=6.2)
+@MainActor
+struct ButtonLatestStatePreferenceKey: @MainActor PreferenceKey {
+    static let defaultValue: StateChangedEvent? = nil
+
+    static func reduce(value: inout StateChangedEvent?, nextValue: () -> StateChangedEvent?) {
+        guard let next = nextValue() else {
+            return
+        }
+        if value == nil || next.time > value!.time {
+            value = next
+        }
+    }
+}
+#else
 struct ButtonLatestStatePreferenceKey: PreferenceKey {
     static let defaultValue: StateChangedEvent? = nil
 
@@ -142,6 +157,7 @@ struct ButtonLatestStatePreferenceKey: PreferenceKey {
         }
     }
 }
+#endif
 
 struct OnButtonLatestStateChangeModifier: ViewModifier {
     let handler: OptionalButtonStateChangedHandler
