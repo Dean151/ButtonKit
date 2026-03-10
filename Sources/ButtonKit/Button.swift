@@ -284,7 +284,11 @@ extension AsyncButton where S == Label<Text, Image> {
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
-        self.label = Label(titleKey, image: name)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(name)
+        })
         self.onStateChange = onStateChange
     }
     
@@ -338,7 +342,11 @@ extension AsyncButton where S == Label<Text, Image> {
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
-        self.label = Label(titleKey, image: image)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(image)
+        })
         self.onStateChange = onStateChange
     }
 
@@ -393,7 +401,11 @@ extension AsyncButton where S == Label<Text, Image> {
         self.id = id
         self._progress = .init(initialValue: progress)
         self.action = action
-        self.label = Label(titleKey, systemImage: systemImage)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(systemName: systemImage)
+        })
         self.onStateChange = onStateChange
     }
     
@@ -513,7 +525,11 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
-        self.label = Label(titleKey, image: name)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(name)
+        })
         self.onStateChange = onStateChange
     }
     
@@ -564,7 +580,11 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
-        self.label = Label(titleKey, image: image)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(image)
+        })
         self.onStateChange = onStateChange
     }
 
@@ -616,7 +636,11 @@ extension AsyncButton where P == IndeterminateProgress, S == Label<Text, Image> 
         self.id = id
         self._progress = .init(initialValue: .indeterminate)
         self.action = { _ in try await action()}
-        self.label = Label(titleKey, systemImage: systemImage)
+        self.label = Label(title: {
+            Text(titleKey)
+        }, icon: {
+            Image(systemName: systemImage)
+        })
         self.onStateChange = onStateChange
     }
     
