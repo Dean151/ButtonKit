@@ -57,12 +57,6 @@ public final class TriggerButton: Sendable {
     }
 }
 
-private struct TriggerEnvironmentKey: EnvironmentKey {
-    static let defaultValue = TriggerButton()
-}
-
-extension EnvironmentValues {
-    public var triggerButton: TriggerButton {
-        self[TriggerEnvironmentKey.self]
-    }
+public extension EnvironmentValues {
+    @Entry var triggerButton: TriggerButton = .init()
 }
