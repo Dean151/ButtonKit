@@ -32,20 +32,11 @@ import SwiftUI
 public typealias ButtonStateChangedHandler = @MainActor @Sendable (StateChangedEvent) -> Void
 public typealias ButtonStateErrorHandler = @MainActor @Sendable (ErrorOccurredEvent) -> Void
 
-#if swift(>=6.2)
-@MainActor
-public struct StateChangedEvent: @MainActor Equatable {
-    public let buttonID: AnyHashable
-    public let state: AsyncButtonState
-    let time: Date = .now
-}
-#else
 public struct StateChangedEvent: Equatable, Sendable {
     nonisolated(unsafe) public let buttonID: AnyHashable
     public let state: AsyncButtonState
     let time: Date = .now
 }
-#endif
 
 public struct ErrorOccurredEvent {
     public let buttonID: AnyHashable
