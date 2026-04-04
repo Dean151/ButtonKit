@@ -31,10 +31,32 @@ public struct PulseAsyncButtonStyle: AsyncButtonStyle {
     public init() {}
 
     public func makeButton(configuration: ButtonConfiguration) -> some View {
-        configuration.button
-            .compositingGroup()
-            .opacity(configuration.isLoading ? 0.5 : 1)
-            .animation(configuration.isLoading ? .linear(duration: 1).repeatForever() : nil, value: configuration.isLoading)
+        PulseButton(configuration: configuration)
+    }
+}
+
+private struct PulseButton: View {
+    @Environment(\.accessibilityReduceMotion)
+    private var reduceMotion
+
+    let configuration: PulseAsyncButtonStyle.ButtonConfiguration
+
+    @ViewBuilder
+    var body: some View {
+        if reduceMotion {
+            configuration.button
+                .compositingGroup()
+                .opacity(configuration.isLoading ? 0.5 : 1)
+                .animation(.easeInOut(duration: 0.2), value: configuration.isLoading)
+        } else {
+            configuration.button
+                .compositingGroup()
+                .opacity(configuration.isLoading ? 0.5 : 1)
+                .animation(
+                    configuration.isLoading ? .linear(duration: 1).repeatForever() : nil,
+                    value: configuration.isLoading
+                )
+        }
     }
 }
 
