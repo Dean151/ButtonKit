@@ -324,6 +324,7 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
 
 You can also create your own progression logic by implementing the `TaskProgress` protocol. 
 This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
+When an `AsyncButton` task is cancelled, `TaskProgress.cancel()` is invoked on the main actor so custom progress implementations can forward that cancellation to any underlying API.
 
 Available TaskProgress implementation are:
 - Indeterminate, default non-determinant progress with `.indeterminate`

@@ -55,6 +55,7 @@ struct AsyncButtonModelTests {
         #expect(states.count == 2)
         #expect(progress.startedCount == 1)
         #expect(progress.endedCount == 1)
+        #expect(progress.cancelCount == 1)
         #expect(model.numberOfFailures == 0)
         #expect(model.latestError == nil)
 
@@ -188,6 +189,17 @@ struct AsyncButtonModelTests {
         #expect(afterEnd == 1)
         #expect(progress.fractionCompleted == afterEnd)
     }
+
+    @Test
+    func nsProgressBridgeCancelsUnderlyingProgress() {
+        let bridge: NSProgressBridge = .progress
+        let progress = Progress(totalUnitCount: 1)
+
+        bridge.nsProgress = progress
+        bridge.cancel()
+
+        #expect(progress.isCancelled)
+    }
 }
 
 private func startedTask(in states: [AsyncButtonState]) -> Task<Void, Never>? {
@@ -204,12 +216,17 @@ private func startedTask(in states: [AsyncButtonState]) -> Task<Void, Never>? {
 private final class ProgressProbe: TaskProgress {
     @Published var fractionCompleted: Double?
     private(set) var resetCount = 0
+    private(set) var cancelCount = 0
     private(set) var startedCount = 0
     private(set) var endedCount = 0
 
     func reset() {
         resetCount += 1
         fractionCompleted = 0
+    }
+
+    func cancel() {
+        cancelCount += 1
     }
 
     func started() async {

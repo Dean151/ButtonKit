@@ -89,7 +89,13 @@ final class AsyncButtonModel<P: TaskProgress>: ObservableObject {
 
     private func completionForCurrentRun() async -> AsyncButtonCompletion {
         do {
-            try await action(progress)
+            try await withTaskCancellationHandler {
+                try await action(progress)
+            } onCancel: {
+                Task { @MainActor in
+                    progress.cancel()
+                }
+            }
             return Task.isCancelled ? .cancelled : .completed
         } catch is CancellationError {
             return .cancelled
