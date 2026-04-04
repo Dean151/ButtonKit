@@ -334,9 +334,4 @@ Available TaskProgress implementation are:
 
 ## Contribute
 
-You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributions:
-
-- Improving documentation
-- Adding some automated tests 😜
-- Helping me out to remove/improve all the type erasure stuff if possible?
-- Adding some new built-in styles, options or properties for more use cases
+You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. 
