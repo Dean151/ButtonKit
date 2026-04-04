@@ -240,12 +240,15 @@ enum LoginViewButton: Hashable {
 }
 
 struct ContentView: View {
+    @Namespace private var triggerScope
+
     var body: some View {
         AsyncButton(id: LoginViewButton.login) {
             try await login()
         } label: {
             Text("Login")
         }
+        .buttonTriggerNamespace(triggerScope)
     }
 }
 ```
@@ -256,14 +259,17 @@ And from any view, access the triggerButton environment:
 struct ContentView: View {
     @Environment(\.triggerButton)
     private var triggerButton
+    @Namespace private var triggerScope
     
     ...
     
     func performLogin() {
-        triggerButton(LoginViewButton.login)
+        triggerButton(id: LoginViewButton.login, in: triggerScope)
     }
 }
 ```
+
+Buttons with the same identifier can now coexist safely as long as they are registered in different trigger namespaces using `@Namespace`.
 
 Note that:
 - The button **Must be on screen** to trigger it using this method.

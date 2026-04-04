@@ -97,6 +97,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private var throwableButtonStyle
     @Environment(\.triggerButton)
     private var triggerButton
+    @Environment(\.triggerButtonNamespace)
+    private var triggerButtonNamespace
 
     private let role: ButtonRole?
     private let id: AnyHashable?
@@ -147,13 +149,13 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
                 guard let id else {
                     return
                 }
-                triggerButton.register(id: id, action: model.perform)
+                triggerButton.register(id: id, in: triggerButtonNamespace, action: model.perform)
             }
             .onDisappear {
                 guard let id else {
                     return
                 }
-                triggerButton.unregister(id: id)
+                triggerButton.unregister(id: id, in: triggerButtonNamespace)
             }
             .onChange(of: isEnabled) { newValue in
                 model.setDisabled(!newValue)
