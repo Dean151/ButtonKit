@@ -195,7 +195,7 @@ struct OnButtonLatestStateChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(ButtonLatestStatePreferenceKey.self) { state in
-                MainActor.assumeIsolated {
+                Task { @MainActor in
                     handler(state)
                 }
             }
