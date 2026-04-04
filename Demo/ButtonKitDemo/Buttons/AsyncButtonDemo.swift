@@ -61,7 +61,7 @@ struct AsyncButtonDemo: View {
                 }
                 .asyncButtonStyle(.pulse)
 
-                if #available(iOS 18.0, *) {
+                if #available(iOS 18.0, macOS 14.0, *) {
                     AsyncButton {
                         try await Task.sleep(nanoseconds: 2_000_000_000)
                     } label: {
