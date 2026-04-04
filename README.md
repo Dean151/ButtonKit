@@ -177,6 +177,9 @@ Group {
     // event.buttonID will contain either "button 1" or "button 2"
     // if id parameter is omitted, a UUID is generated for the button.
 }
+.onButtonStateCancelled { buttonID in
+    // buttonID contains the cancelled button identifier
+}
 ```
 
 While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressView`.
