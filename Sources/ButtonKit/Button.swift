@@ -137,6 +137,7 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             .makeButton(configuration: asyncConfiguration)
             .allowsHitTesting(allowsHitTestingWhenLoading || !model.isLoading)
             .disabled(disabledWhenLoading && model.isLoading)
+            .accessibilityAddTraits(model.isLoading ? .updatesFrequently : [])
             .preference(
                 key: ButtonLatestStatePreferenceKey.self,
                 value: model.state.flatMap { .init(buttonID: id ?? uuid as AnyHashable, state: $0) }
