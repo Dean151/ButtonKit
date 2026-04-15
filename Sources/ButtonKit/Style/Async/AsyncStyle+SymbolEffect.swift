@@ -69,8 +69,6 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<VariableCo
     }
 }
 
-#if swift(>=6.0)
-
 @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<BounceSymbolEffect> {
     public static func symbolEffect(_ effect: BounceSymbolEffect) -> some AsyncButtonStyle {
@@ -95,8 +93,6 @@ extension AsyncButtonStyle where Self == SymbolEffectAsyncButtonStyle<WiggleSymb
         SymbolEffectAsyncButtonStyle(effect: effect)
     }
 }
-
-#endif
 
 #if swift(>=6.2)
 
