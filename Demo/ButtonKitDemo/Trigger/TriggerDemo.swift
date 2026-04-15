@@ -41,6 +41,7 @@ enum FormButton: Hashable {
 struct TriggerButtonDemo: View {
     @Environment(\.triggerButton)
     private var triggerButton
+    @Namespace private var loginForm
 
     @FocusState private var focus: FieldName?
     @State private var username = "Dean"
@@ -62,7 +63,7 @@ struct TriggerButtonDemo: View {
                     .focused($focus, equals: .password)
                     .submitLabel(.send)
                     .onSubmit {
-                        triggerButton(id: FormButton.login)
+                        triggerButton(id: FormButton.login, in: loginForm)
                     }
             } header: {
                 Text("You need to login")
@@ -98,9 +99,10 @@ struct TriggerButtonDemo: View {
         .alert(isPresented: $success) {
             Alert(title: Text("Logged in!"), dismissButton: .default(Text("OK")))
         }
+        .buttonTriggerNamespace(loginForm)
         .onChange(of: success) { _ in
             // After a login, reset the fields
-            triggerButton(id: FormButton.cancel)
+            triggerButton(id: FormButton.cancel, in: loginForm)
         }
     }
 }

@@ -45,20 +45,33 @@ public class EstimatedProgress: TaskProgress {
     }
 
     public func reset() {
+        task?.cancel()
+        task = nil
         fractionCompleted = 0
     }
 
     public func started() async {
+        task?.cancel()
         task = Task {
             for _ in 1...100 {
-                try? await sleeper.sleep(fraction: stop / 100)
-                fractionCompleted! += stop / 100
+                do {
+                    try await sleeper.sleep(fraction: stop / 100)
+                } catch {
+                    return
+                }
+
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                fractionCompleted = min(stop, (fractionCompleted ?? 0) + stop / 100)
             }
         }
     }
 
     public func ended() async {
         task?.cancel()
+        task = nil
         fractionCompleted = 1
         try? await Task.sleep(nanoseconds: 100_000_000)
     }

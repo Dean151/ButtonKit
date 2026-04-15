@@ -31,6 +31,7 @@ import SwiftUI
 
 public typealias ButtonStateChangedHandler = @MainActor @Sendable (StateChangedEvent) -> Void
 public typealias ButtonStateErrorHandler = @MainActor @Sendable (ErrorOccurredEvent) -> Void
+public typealias ButtonStateCancelledHandler = @MainActor @Sendable (AnyHashable) -> Void
 
 #if swift(>=6.2)
 @MainActor
@@ -39,14 +40,7 @@ public struct StateChangedEvent: @MainActor Equatable {
     public let state: AsyncButtonState
     let time: Date = .now
 }
-#elseif swift(>=6.0)
-public struct StateChangedEvent: Equatable, Sendable {
-    nonisolated(unsafe) public let buttonID: AnyHashable
-    public let state: AsyncButtonState
-    let time: Date = .now
-}
 #else
-@MainActor
 public struct StateChangedEvent: Equatable, Sendable {
     nonisolated(unsafe) public let buttonID: AnyHashable
     public let state: AsyncButtonState
@@ -60,6 +54,22 @@ public struct ErrorOccurredEvent {
     let time: Date = .now
 }
 
+extension StateChangedEvent {
+    var errorOccurredEvent: ErrorOccurredEvent? {
+        guard case let .ended(.errored(error, _)) = state else {
+            return nil
+        }
+        return .init(buttonID: buttonID, error: error)
+    }
+
+    var cancelledButtonID: AnyHashable? {
+        guard case .ended(.cancelled) = state else {
+            return nil
+        }
+        return buttonID
+    }
+}
+
 extension View {
     public func onButtonStateChange(_ handler: @escaping ButtonStateChangedHandler) -> some View {
         modifier(OnButtonLatestStateChangeModifier { state in
@@ -68,10 +78,19 @@ extension View {
             }
         })
     }
+
     public func onButtonStateError(_ handler: @escaping ButtonStateErrorHandler) -> some View {
         modifier(OnButtonLatestStateChangeModifier { event in
-            if case let .ended(.errored(error, _)) = event?.state {
-                handler(.init(buttonID: event!.buttonID, error: error))
+            if let errorEvent = event?.errorOccurredEvent {
+                handler(errorEvent)
+            }
+        })
+    }
+
+    public func onButtonStateCancelled(_ handler: @escaping ButtonStateCancelledHandler) -> some View {
+        modifier(OnButtonLatestStateChangeModifier { event in
+            if let buttonID = event?.cancelledButtonID {
+                handler(buttonID)
             }
         })
     }
@@ -169,7 +188,7 @@ struct OnButtonLatestStateChangeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onPreferenceChange(ButtonLatestStatePreferenceKey.self) { state in
-                MainActor.assumeIsolated {
+                Task { @MainActor in
                     handler(state)
                 }
             }

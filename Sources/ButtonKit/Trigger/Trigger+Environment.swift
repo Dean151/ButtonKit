@@ -28,35 +28,66 @@
 import OSLog
 import SwiftUI
 
+private struct TriggerButtonKey: Hashable {
+    let namespace: Namespace.ID?
+    let id: AnyHashable
+}
+
+private func triggerScopeDescription(_ namespace: Namespace.ID?) -> String {
+    guard let namespace else {
+        return ""
+    }
+
+    return " in namespace \(String(describing: namespace))"
+}
+
 /// Allow to trigger an arbitrary but identified `AsyncButton`
 public final class TriggerButton: Sendable {
-    @MainActor private var buttons: [AnyHashable: @MainActor () -> Void] = [:]
+    @MainActor private var buttons: [TriggerButtonKey: @MainActor () -> Void] = [:]
 
     fileprivate init() {}
 
     @MainActor
     public func callAsFunction(id: AnyHashable) {
-        guard let closure = buttons[id] else {
-            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Could not trigger button with id: \(id). It is not currently on screen!")
+        trigger(id: id, in: nil)
+    }
+
+    @MainActor
+    public func callAsFunction(id: AnyHashable, in namespace: Namespace.ID) {
+        trigger(id: id, in: namespace)
+    }
+
+    @MainActor
+    private func trigger(id: AnyHashable, in namespace: Namespace.ID?) {
+        guard let closure = buttons[.init(namespace: namespace, id: id)] else {
+            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Could not trigger button with id: \(id)\(triggerScopeDescription(namespace)). It is not currently on screen!")
             return
         }
         closure()
     }
 
     @MainActor
-    func register(id: AnyHashable, action: @escaping @MainActor () -> Void) {
-        if buttons.keys.contains(id) {
-            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Registering a button with an already existing id: \(id). The previous one was overridden.")
+    func register(id: AnyHashable, in namespace: Namespace.ID?, action: @escaping @MainActor () -> Void) {
+        let key = TriggerButtonKey(namespace: namespace, id: id)
+        if buttons.keys.contains(key) {
+            Logger(subsystem: "ButtonKit", category: "Trigger").warning("Registering a button with an already existing id: \(id)\(triggerScopeDescription(namespace)). The previous one was overridden.")
         }
-        buttons.updateValue(action, forKey: id)
+        buttons.updateValue(action, forKey: key)
     }
 
     @MainActor
-    func unregister(id: AnyHashable) {
-        buttons.removeValue(forKey: id)
+    func unregister(id: AnyHashable, in namespace: Namespace.ID?) {
+        buttons.removeValue(forKey: .init(namespace: namespace, id: id))
     }
 }
 
 public extension EnvironmentValues {
     @Entry var triggerButton: TriggerButton = .init()
+    @Entry var triggerButtonNamespace: Namespace.ID? = nil
+}
+
+extension View {
+    public func buttonTriggerNamespace(_ namespace: Namespace.ID) -> some View {
+        environment(\.triggerButtonNamespace, namespace)
+    }
 }

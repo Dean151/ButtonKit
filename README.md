@@ -1,5 +1,8 @@
 # ButtonKit
 
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FDean151%2FButtonKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/Dean151/ButtonKit)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FDean151%2FButtonKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/Dean151/ButtonKit)
+
 ButtonKit provides a new a SwiftUI Button replacement to deal with throwable and asynchronous actions.
 By default, SwiftUI Button only accept a closure.
 
@@ -7,7 +10,7 @@ With ButtonKit, you'll have access to an `AsyncButton` view, accepting a `() asy
 
 ## Requirements
 
-- Swift 5.10+ (Xcode 15.3+)
+- Swift 6.0+ (Xcode 16.0+)
 - iOS 15+, iPadOS 15+, tvOS 15+, watchOS 8+, macOS 12+, visionOS 1+
 
 ## Installation
@@ -177,6 +180,9 @@ Group {
     // event.buttonID will contain either "button 1" or "button 2"
     // if id parameter is omitted, a UUID is generated for the button.
 }
+.onButtonStateCancelled { buttonID in
+    // buttonID contains the cancelled button identifier
+}
 ```
 
 While the progress is loading, the button will animate, defaulting by replacing the label of the button with a `ProgressView`.
@@ -237,12 +243,15 @@ enum LoginViewButton: Hashable {
 }
 
 struct ContentView: View {
+    @Namespace private var triggerScope
+
     var body: some View {
         AsyncButton(id: LoginViewButton.login) {
             try await login()
         } label: {
             Text("Login")
         }
+        .buttonTriggerNamespace(triggerScope)
     }
 }
 ```
@@ -253,14 +262,17 @@ And from any view, access the triggerButton environment:
 struct ContentView: View {
     @Environment(\.triggerButton)
     private var triggerButton
+    @Namespace private var triggerScope
     
     ...
     
     func performLogin() {
-        triggerButton(LoginViewButton.login)
+        triggerButton(id: LoginViewButton.login, in: triggerScope)
     }
 }
 ```
+
+Buttons with the same identifier can now coexist safely as long as they are registered in different trigger namespaces using `@Namespace`.
 
 Note that:
 - The button **Must be on screen** to trigger it using this method.
@@ -321,6 +333,7 @@ AsyncButton(progress: .discrete(totalUnitCount: files.count)) { progress in
 
 You can also create your own progression logic by implementing the `TaskProgress` protocol. 
 This would allow you to build logarithmic based progress, or a first step that is indeterminate, before moving to a deterministic state (like the App Store download button)
+When an `AsyncButton` task is cancelled, `TaskProgress.cancel()` is invoked on the main actor so custom progress implementations can forward that cancellation to any underlying API.
 
 Available TaskProgress implementation are:
 - Indeterminate, default non-determinant progress with `.indeterminate`
@@ -330,9 +343,4 @@ Available TaskProgress implementation are:
 
 ## Contribute
 
-You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. Suggestions for contributions:
-
-- Improving documentation
-- Adding some automated tests 😜
-- Helping me out to remove/improve all the type erasure stuff if possible?
-- Adding some new built-in styles, options or properties for more use cases
+You are encouraged to contribute to this repository, by opening issues, or pull requests for bug fixes, improvement requests, or support. 

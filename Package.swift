@@ -11,6 +11,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "ButtonKit"),
+        .testTarget(name: "ButtonKitTests", dependencies: ["ButtonKit"]),
     ],
     swiftLanguageModes: [.v6]
 )

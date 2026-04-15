@@ -31,9 +31,27 @@ public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
     public init() {}
 
     public func makeButton(configuration: ButtonConfiguration) -> some View {
-        configuration.button
-            .modifier(Shake(animatableData: CGFloat(configuration.numberOfFailures)))
-            .animation(.easeInOut, value: configuration.numberOfFailures)
+        ShakeButton(configuration: configuration)
+    }
+}
+
+private struct ShakeButton: View {
+    @Environment(\.accessibilityReduceMotion)
+    private var reduceMotion
+
+    let configuration: ShakeThrowableButtonStyle.ButtonConfiguration
+
+    @ViewBuilder
+    var body: some View {
+        if reduceMotion {
+            configuration.button
+                .modifier(Flash(animatableData: CGFloat(configuration.numberOfFailures)))
+                .animation(.easeInOut, value: configuration.numberOfFailures)
+        } else {
+            configuration.button
+                .modifier(Shake(animatableData: CGFloat(configuration.numberOfFailures)))
+                .animation(.easeInOut, value: configuration.numberOfFailures)
+        }
     }
 }
 
@@ -50,6 +68,21 @@ struct Shake: GeometryEffect {
 
     nonisolated func effectValue(size: CGSize) -> ProjectionTransform {
         ProjectionTransform(CGAffineTransform(translationX: amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)), y: 0))
+    }
+}
+
+struct Flash: AnimatableModifier {
+    let maximumBrightness: CGFloat = 0.35
+    let maximumSaturationReduction: CGFloat = 0.2
+    var animatableData: CGFloat
+
+    func body(content: Content) -> some View {
+        let phase = animatableData - floor(animatableData)
+        let intensity = max(0, sin(phase * .pi))
+
+        content
+            .brightness(Double(maximumBrightness * intensity))
+            .saturation(Double(1 - maximumSaturationReduction * intensity))
     }
 }
 
