@@ -81,31 +81,13 @@ public final class TriggerButton: Sendable {
     }
 }
 
-private struct TriggerEnvironmentKey: EnvironmentKey {
-    static let defaultValue = TriggerButton()
-}
-
-private struct TriggerNamespaceEnvironmentKey: EnvironmentKey {
-    static let defaultValue: Namespace.ID? = nil
+public extension EnvironmentValues {
+    @Entry var triggerButton: TriggerButton = .init()
+    @Entry var triggerButtonNamespace: Namespace.ID? = nil
 }
 
 extension View {
     public func buttonTriggerNamespace(_ namespace: Namespace.ID) -> some View {
         environment(\.triggerButtonNamespace, namespace)
-    }
-}
-
-extension EnvironmentValues {
-    public var triggerButton: TriggerButton {
-        self[TriggerEnvironmentKey.self]
-    }
-
-    var triggerButtonNamespace: Namespace.ID? {
-        get {
-            self[TriggerNamespaceEnvironmentKey.self]
-        }
-        set {
-            self[TriggerNamespaceEnvironmentKey.self] = newValue
-        }
     }
 }

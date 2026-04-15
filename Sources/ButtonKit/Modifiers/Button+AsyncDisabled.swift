@@ -43,30 +43,8 @@ extension View {
 
 // MARK: SwiftUI Environment
 
-struct AllowsHitTestingWhenLoadingKey: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-struct DisabledWhenLoadingKey: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    var allowsHitTestingWhenLoading: Bool {
-        get {
-            return self[AllowsHitTestingWhenLoadingKey.self]
-        }
-        set {
-            self[AllowsHitTestingWhenLoadingKey.self] = newValue
-        }
-    }
+    @Entry var allowsHitTestingWhenLoading: Bool = false
 
-    var disabledWhenLoading: Bool {
-        get {
-            return self[DisabledWhenLoadingKey.self]
-        }
-        set {
-            self[DisabledWhenLoadingKey.self] = newValue
-        }
-    }
+    @Entry var disabledWhenLoading: Bool = false
 }

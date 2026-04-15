@@ -85,19 +85,8 @@ extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
     }
 }
 
-struct ThrowableButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyThrowableButtonStyle = AnyThrowableButtonStyle(.auto)
-}
-
 extension EnvironmentValues {
-    var throwableButtonStyle: AnyThrowableButtonStyle {
-        get {
-            return self[ThrowableButtonStyleKey.self]
-        }
-        set {
-            self[ThrowableButtonStyleKey.self] = newValue
-        }
-    }
+    @Entry var throwableButtonStyle: AnyThrowableButtonStyle = .init(.auto)
 }
 
 // MARK: - Type erasure

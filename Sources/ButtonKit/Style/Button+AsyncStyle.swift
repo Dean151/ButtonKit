@@ -85,19 +85,8 @@ extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
     }
 }
 
-struct AsyncButtonStyleKey: EnvironmentKey {
-    static let defaultValue: AnyAsyncButtonStyle = AnyAsyncButtonStyle(.auto)
-}
-
 extension EnvironmentValues {
-    var asyncButtonStyle: AnyAsyncButtonStyle {
-        get {
-            return self[AsyncButtonStyleKey.self]
-        }
-        set {
-            self[AsyncButtonStyleKey.self] = newValue
-        }
-    }
+    @Entry var asyncButtonStyle: AnyAsyncButtonStyle = .init(.auto)
 }
 
 // MARK: - Type erasure
