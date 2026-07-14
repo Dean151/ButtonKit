@@ -229,6 +229,19 @@ You can also build your own customization by implementing `AsyncButtonStyle` pro
 
 Just like `ThrowableButtonStyle`, `AsyncButtonStyle` allows you to implement either `makeLabel`, `makeButton` or both to alter the button look and behavior while loading is in progress.
 
+Both style protocols conform to `DynamicProperty`, so your styles can use `@Environment`, `@State` or any other SwiftUI dynamic property directly:
+
+```swift
+public struct MyAsyncButtonStyle: AsyncButtonStyle {
+    @Environment(\.accessibilityReduceMotion)
+    private var reduceMotion
+
+    public func makeButton(configuration: ButtonConfiguration) -> some View {
+        // ...
+    }
+}
+```
+
 ### External triggering
 
 You might need to trigger the behavior behind a button with specific user actions, like when pressing the "Send" key on the virtual keyboard.

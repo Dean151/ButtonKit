@@ -28,21 +28,13 @@
 import SwiftUI
 
 public struct ShakeThrowableButtonStyle: ThrowableButtonStyle {
-    public init() {}
-
-    public func makeButton(configuration: ButtonConfiguration) -> some View {
-        ShakeButton(configuration: configuration)
-    }
-}
-
-private struct ShakeButton: View {
     @Environment(\.accessibilityReduceMotion)
     private var reduceMotion
 
-    let configuration: ShakeThrowableButtonStyle.ButtonConfiguration
+    public init() {}
 
     @ViewBuilder
-    var body: some View {
+    public func makeButton(configuration: ButtonConfiguration) -> some View {
         if reduceMotion {
             configuration.button
                 .modifier(Flash(animatableData: CGFloat(configuration.numberOfFailures)))

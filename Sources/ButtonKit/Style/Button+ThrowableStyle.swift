@@ -35,7 +35,7 @@ extension View {
     }
 }
 
-public protocol ThrowableButtonStyle: Sendable {
+public protocol ThrowableButtonStyle: DynamicProperty, Sendable {
     associatedtype ButtonLabel: View
     associatedtype ButtonView: View
     typealias LabelConfiguration = ThrowableButtonStyleLabelConfiguration
@@ -104,7 +104,7 @@ extension ThrowableButtonStyle {
 }
 
 private struct ResolvedThrowableButtonStyleLabel<Style: ThrowableButtonStyle>: View {
-    let style: Style
+    var style: Style
     let configuration: ThrowableButtonStyleLabelConfiguration
 
     var body: some View {
@@ -113,7 +113,7 @@ private struct ResolvedThrowableButtonStyleLabel<Style: ThrowableButtonStyle>: V
 }
 
 private struct ResolvedThrowableButtonStyleButton<Style: ThrowableButtonStyle>: View {
-    let style: Style
+    var style: Style
     let configuration: ThrowableButtonStyleButtonConfiguration
 
     var body: some View {

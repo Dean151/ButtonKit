@@ -35,7 +35,7 @@ extension View {
     }
 }
 
-public protocol AsyncButtonStyle: Sendable {
+public protocol AsyncButtonStyle: DynamicProperty, Sendable {
     associatedtype ButtonLabel: View
     associatedtype ButtonView: View
     typealias LabelConfiguration = AsyncButtonStyleLabelConfiguration
@@ -104,7 +104,7 @@ extension AsyncButtonStyle {
 }
 
 private struct ResolvedAsyncButtonStyleLabel<Style: AsyncButtonStyle>: View {
-    let style: Style
+    var style: Style
     let configuration: AsyncButtonStyleLabelConfiguration
 
     var body: some View {
@@ -113,7 +113,7 @@ private struct ResolvedAsyncButtonStyleLabel<Style: AsyncButtonStyle>: View {
 }
 
 private struct ResolvedAsyncButtonStyleButton<Style: AsyncButtonStyle>: View {
-    let style: Style
+    var style: Style
     let configuration: AsyncButtonStyleButtonConfiguration
 
     var body: some View {
