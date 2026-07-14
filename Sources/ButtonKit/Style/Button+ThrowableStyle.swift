@@ -31,7 +31,7 @@ import SwiftUI
 
 extension View {
     public func throwableButtonStyle<S: ThrowableButtonStyle>(_ style: S) -> some View {
-        environment(\.throwableButtonStyle, AnyThrowableButtonStyle(style))
+        environment(\.throwableButtonStyle, style)
     }
 }
 
@@ -86,36 +86,37 @@ extension ThrowableButtonStyle where Self == ShakeThrowableButtonStyle {
 }
 
 extension EnvironmentValues {
-    @Entry var throwableButtonStyle: AnyThrowableButtonStyle = .init(.auto)
+    @Entry var throwableButtonStyle: any ThrowableButtonStyle = ShakeThrowableButtonStyle()
 }
 
-// MARK: - Type erasure
-
-struct AnyThrowableButtonStyle: ThrowableButtonStyle {
-    private let _makeLabel: @MainActor @Sendable (ThrowableButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: @MainActor @Sendable (ThrowableButtonStyle.ButtonConfiguration) -> AnyView
-
-    init<S: ThrowableButtonStyle>(_ style: S) {
-        self._makeLabel = style.makeLabelTypeErased
-        self._makeButton = style.makeButtonTypeErased
-    }
-
-    func makeLabel(configuration: LabelConfiguration) -> AnyView {
-        self._makeLabel(configuration)
-    }
-
-    func makeButton(configuration: ButtonConfiguration) -> AnyView {
-        self._makeButton(configuration)
-    }
-}
+// MARK: - Style resolution
 
 extension ThrowableButtonStyle {
     @MainActor
-    func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
-        AnyView(self.makeLabel(configuration: configuration))
+    func resolveLabel(configuration: LabelConfiguration) -> AnyView {
+        AnyView(ResolvedThrowableButtonStyleLabel(style: self, configuration: configuration))
     }
+
     @MainActor
-    func makeButtonTypeErased(configuration: ButtonConfiguration) -> AnyView {
-        AnyView(self.makeButton(configuration: configuration))
+    func resolveButton(configuration: ButtonConfiguration) -> AnyView {
+        AnyView(ResolvedThrowableButtonStyleButton(style: self, configuration: configuration))
+    }
+}
+
+private struct ResolvedThrowableButtonStyleLabel<Style: ThrowableButtonStyle>: View {
+    let style: Style
+    let configuration: ThrowableButtonStyleLabelConfiguration
+
+    var body: some View {
+        style.makeLabel(configuration: configuration)
+    }
+}
+
+private struct ResolvedThrowableButtonStyleButton<Style: ThrowableButtonStyle>: View {
+    let style: Style
+    let configuration: ThrowableButtonStyleButtonConfiguration
+
+    var body: some View {
+        style.makeButton(configuration: configuration)
     }
 }

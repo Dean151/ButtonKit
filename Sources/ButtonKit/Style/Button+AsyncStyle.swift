@@ -31,7 +31,7 @@ import SwiftUI
 
 extension View {
     public func asyncButtonStyle<S: AsyncButtonStyle>(_ style: S) -> some View {
-        environment(\.asyncButtonStyle, AnyAsyncButtonStyle(style))
+        environment(\.asyncButtonStyle, style)
     }
 }
 
@@ -86,36 +86,37 @@ extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
 }
 
 extension EnvironmentValues {
-    @Entry var asyncButtonStyle: AnyAsyncButtonStyle = .init(.auto)
+    @Entry var asyncButtonStyle: any AsyncButtonStyle = OverlayAsyncButtonStyle(style: .bar)
 }
 
-// MARK: - Type erasure
-
-struct AnyAsyncButtonStyle: AsyncButtonStyle, Sendable {
-    private let _makeLabel: @MainActor @Sendable (AsyncButtonStyle.LabelConfiguration) -> AnyView
-    private let _makeButton: @MainActor @Sendable (AsyncButtonStyle.ButtonConfiguration) -> AnyView
-
-    init<S: AsyncButtonStyle>(_ style: S) {
-        self._makeLabel = style.makeLabelTypeErased
-        self._makeButton = style.makeButtonTypeErased
-    }
-
-    func makeLabel(configuration: LabelConfiguration) -> AnyView {
-        self._makeLabel(configuration)
-    }
-
-    func makeButton(configuration: ButtonConfiguration) -> AnyView {
-        self._makeButton(configuration)
-    }
-}
+// MARK: - Style resolution
 
 extension AsyncButtonStyle {
     @MainActor
-    func makeLabelTypeErased(configuration: LabelConfiguration) -> AnyView {
-        AnyView(self.makeLabel(configuration: configuration))
+    func resolveLabel(configuration: LabelConfiguration) -> AnyView {
+        AnyView(ResolvedAsyncButtonStyleLabel(style: self, configuration: configuration))
     }
+
     @MainActor
-    func makeButtonTypeErased(configuration: ButtonConfiguration) -> AnyView {
-        AnyView(self.makeButton(configuration: configuration))
+    func resolveButton(configuration: ButtonConfiguration) -> AnyView {
+        AnyView(ResolvedAsyncButtonStyleButton(style: self, configuration: configuration))
+    }
+}
+
+private struct ResolvedAsyncButtonStyleLabel<Style: AsyncButtonStyle>: View {
+    let style: Style
+    let configuration: AsyncButtonStyleLabelConfiguration
+
+    var body: some View {
+        style.makeLabel(configuration: configuration)
+    }
+}
+
+private struct ResolvedAsyncButtonStyleButton<Style: AsyncButtonStyle>: View {
+    let style: Style
+    let configuration: AsyncButtonStyleButtonConfiguration
+
+    var body: some View {
+        style.makeButton(configuration: configuration)
     }
 }

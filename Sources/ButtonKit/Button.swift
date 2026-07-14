@@ -113,14 +113,13 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             latestError: model.latestError,
             numberOfFailures: model.numberOfFailures
         )
-        let label: AnyView
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
-            label: AnyView(throwableButtonStyle.makeLabel(configuration: throwableLabelConfiguration)),
+            label: throwableButtonStyle.resolveLabel(configuration: throwableLabelConfiguration),
             isLoading: model.isLoading,
             fractionCompleted: model.progress.fractionCompleted,
             cancel: model.cancel
         )
-        label = asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
+        let label = asyncButtonStyle.resolveLabel(configuration: asyncLabelConfiguration)
         let button = Button(role: role, action: model.perform) {
             label
         }
@@ -130,13 +129,13 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             numberOfFailures: model.numberOfFailures
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
-            button: AnyView(throwableButtonStyle.makeButton(configuration: throwableConfiguration)),
+            button: throwableButtonStyle.resolveButton(configuration: throwableConfiguration),
             isLoading: model.isLoading,
             fractionCompleted: model.progress.fractionCompleted,
             cancel: model.cancel
         )
         return asyncButtonStyle
-            .makeButton(configuration: asyncConfiguration)
+            .resolveButton(configuration: asyncConfiguration)
             .allowsHitTesting(allowsHitTestingWhenLoading || !model.isLoading)
             .disabled(disabledWhenLoading && model.isLoading)
             .accessibilityAddTraits(model.isLoading ? .updatesFrequently : [])
