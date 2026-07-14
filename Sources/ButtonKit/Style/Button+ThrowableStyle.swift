@@ -54,7 +54,18 @@ extension ThrowableButtonStyle {
 }
 
 public struct ThrowableButtonStyleLabelConfiguration {
-    public typealias Label = AnyView
+    /// A type-erased label of the async button
+    public struct Label: View {
+        private let underlying: AnyView
+
+        init(_ view: some View) {
+            underlying = AnyView(view)
+        }
+
+        public var body: some View {
+            underlying
+        }
+    }
 
     public let label: Label
     public let latestError: Error?
@@ -66,7 +77,18 @@ public struct ThrowableButtonStyleLabelConfiguration {
     }
 }
 public struct ThrowableButtonStyleButtonConfiguration {
-    public typealias Button = AnyView
+    /// A type-erased button, already styled by the current button style
+    public struct Button: View {
+        private let underlying: AnyView
+
+        init(_ view: some View) {
+            underlying = AnyView(view)
+        }
+
+        public var body: some View {
+            underlying
+        }
+    }
 
     public let button: Button
     public let latestError: Error?

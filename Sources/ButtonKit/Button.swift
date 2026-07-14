@@ -109,12 +109,12 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
 
     public var body: some View {
         let throwableLabelConfiguration = ThrowableButtonStyleLabelConfiguration(
-            label: AnyView(label),
+            label: .init(label),
             latestError: model.latestError,
             numberOfFailures: model.numberOfFailures
         )
         let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(
-            label: throwableButtonStyle.resolveLabel(configuration: throwableLabelConfiguration),
+            label: .init(throwableButtonStyle.resolveLabel(configuration: throwableLabelConfiguration)),
             isLoading: model.isLoading,
             fractionCompleted: model.progress.fractionCompleted,
             cancel: model.cancel
@@ -124,12 +124,12 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
             label
         }
         let throwableConfiguration = ThrowableButtonStyleButtonConfiguration(
-            button: AnyView(button),
+            button: .init(button),
             latestError: model.latestError,
             numberOfFailures: model.numberOfFailures
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(
-            button: throwableButtonStyle.resolveButton(configuration: throwableConfiguration),
+            button: .init(throwableButtonStyle.resolveButton(configuration: throwableConfiguration)),
             isLoading: model.isLoading,
             fractionCompleted: model.progress.fractionCompleted,
             cancel: model.cancel
