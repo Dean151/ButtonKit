@@ -81,8 +81,10 @@ public final class TriggerButton: Sendable {
     }
 }
 
+private let defaultTriggerButton = TriggerButton()
+
 public extension EnvironmentValues {
-    @Entry var triggerButton: TriggerButton = .init()
+    @Entry var triggerButton: TriggerButton = defaultTriggerButton
     @Entry var triggerButtonNamespace: Namespace.ID? = nil
 }
 
