@@ -36,8 +36,8 @@ final class AsyncButtonModel<P: TaskProgress>: ObservableObject {
     @Published private(set) var numberOfFailures = 0
     @Published private(set) var latestError: Error?
 
-    private let action: @MainActor (P) async throws -> Void
-    private let onStateChange: (@MainActor (AsyncButtonState) -> Void)?
+    private var action: @MainActor (P) async throws -> Void
+    private var onStateChange: (@MainActor (AsyncButtonState) -> Void)?
     private var isDisabled = false
     private var progressObservation: AnyCancellable?
 
@@ -60,6 +60,17 @@ final class AsyncButtonModel<P: TaskProgress>: ObservableObject {
 
     func setDisabled(_ disabled: Bool) {
         isDisabled = disabled
+    }
+
+    // The model outlives the view value that created it, but closures capture
+    // the values of a single render. The view must hand over its latest
+    // closures on every body evaluation so a run never uses stale captures.
+    func update(
+        action: @escaping @MainActor (P) async throws -> Void,
+        onStateChange: (@MainActor (AsyncButtonState) -> Void)?
+    ) {
+        self.action = action
+        self.onStateChange = onStateChange
     }
 
     func perform() {

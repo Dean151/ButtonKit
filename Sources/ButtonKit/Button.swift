@@ -103,11 +103,14 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
     private let role: ButtonRole?
     private let id: AnyHashable?
     private let label: S
+    private let action: @MainActor (P) async throws -> Void
+    private let onStateChange: (@MainActor (AsyncButtonState) -> Void)?
 
     @State private var uuid = UUID()
     @StateObject private var model: AsyncButtonModel<P>
 
     public var body: some View {
+        model.update(action: action, onStateChange: onStateChange)
         let throwableLabelConfiguration = ThrowableButtonStyleLabelConfiguration(
             label: .init(label),
             latestError: model.latestError,
@@ -172,6 +175,8 @@ public struct AsyncButton<P: TaskProgress, S: View>: View {
         self.role = role
         self.id = id
         self.label = label
+        self.action = action
+        self.onStateChange = onStateChange
         self._model = .init(wrappedValue: AsyncButtonModel(
             progress: progress,
             action: action,

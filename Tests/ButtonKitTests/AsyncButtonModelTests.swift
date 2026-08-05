@@ -162,6 +162,37 @@ struct AsyncButtonModelTests {
     }
 
     @Test
+    func performUsesLatestClosuresAfterUpdate() async throws {
+        let progress = ProgressProbe()
+        var performedActions: [String] = []
+        var states: [AsyncButtonState] = []
+
+        let model = AsyncButtonModel(
+            progress: progress,
+            action: { _ in performedActions.append("initial") },
+            onStateChange: { _ in }
+        )
+
+        model.update(
+            action: { _ in performedActions.append("updated") },
+            onStateChange: { states.append($0) }
+        )
+
+        model.perform()
+        let state = try #require(model.state)
+        let task = try #require(startedTask(in: [state]))
+        await task.value
+
+        #expect(performedActions == ["updated"])
+        #expect(states.count == 2)
+
+        guard case .ended(.completed) = model.state else {
+            Issue.record("Expected a completed terminal state.")
+            return
+        }
+    }
+
+    @Test
     func stateChangedEventExtractsCancellationAndErrorSignals() {
         let cancelledEvent = StateChangedEvent(buttonID: "cancel", state: .ended(.cancelled))
         #expect(cancelledEvent.cancelledButtonID == AnyHashable("cancel"))
